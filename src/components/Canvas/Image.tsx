@@ -1,4 +1,4 @@
-import { IShape } from "@/app/(canvas)/canvas/page";
+import { IShape } from "@/types/shape";
 import Image from "next/image";
 const ImageCanvas = ({ shape }: { shape: IShape }) => {
   if (shape.type !== "image") {

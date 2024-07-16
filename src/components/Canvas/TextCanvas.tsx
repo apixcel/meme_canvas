@@ -9,6 +9,7 @@ const TextCanvas = ({ shape }: { shape: IShape }) => {
         textAlign: `${shape.textStyle?.textAlign || "start"}`,
         fontWeight: `${shape.textStyle?.fontWeight || "400"}`,
       }}
+      id={shape.id}
     >
       {shape.text}
     </p>

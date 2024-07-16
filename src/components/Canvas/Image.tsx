@@ -13,6 +13,7 @@ const ImageCanvas = ({ shape }: { shape: IShape }) => {
       alt="shape"
       className="no-drag"
       style={{ width: `${shape.width}px`, height: "auto" }}
+      id={shape.id}
     />
   );
 };

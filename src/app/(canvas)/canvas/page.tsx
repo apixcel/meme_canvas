@@ -109,19 +109,16 @@ const ShapeEditor: React.FC = () => {
             const shapCopy = { ...shape };
             (shapCopy.textStyle as ITextStyle).fontSize = newFontSize / 8;
             return shapCopy;
-          } else if (shape.type === "rectangle" || shape.type === "image") {
+          } else {
+            const element = document.getElementById(shape.id) as HTMLElement;
+
+            const deltaX = e.movementX;
+            const deltaY = e.movementY;
+
             return {
               ...shape,
-              width: Math.max(deltaX, RESIZE_HANDLE_SIZE) * 1,
-              height: Math.max(deltaY, RESIZE_HANDLE_SIZE) * 1,
-            };
-          } else if (shape.type === "circle") {
-            const newRadius = Math.max(deltaX, deltaY) / 2;
-            return {
-              ...shape,
-              radius: newRadius,
-              width: newRadius * 2,
-              height: newRadius * 2,
+              width: shape.width + deltaX,
+              height: shape.height + deltaY,
             };
           }
         }

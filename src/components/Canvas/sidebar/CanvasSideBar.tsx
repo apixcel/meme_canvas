@@ -68,7 +68,7 @@ const CanvasSideBar: React.FC<IProps> = ({
     <div className="h-full w-[550px] bg-[#252627] flex items-start justify-start">
       <SidebarLinks setTab={setTab} tab={tab} />
 
-      <div className="w-[calc(100%-80px)] h-full py-[10px]">
+      <div className="w-[calc(100%-80px)] h-full py-[10px] overflow-auto smoothBar">
         {tab === "shape" && (
           <ShapeContent addCircle={addCircle} addRectangle={addRectangle} />
         )}

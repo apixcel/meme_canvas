@@ -5,6 +5,7 @@ import ImageCanvas from "@/components/Canvas/Image";
 import RectCanvas from "@/components/Canvas/RectCanvas";
 import CanvasSideBar from "@/components/Canvas/sidebar/CanvasSideBar";
 import DownloadButton from "@/components/Canvas/sidebar/topBar/DownloadButton";
+import SaveChanges from "@/components/Canvas/sidebar/topBar/SaveChanges";
 import TopBar from "@/components/Canvas/sidebar/topBar/TopBar";
 import TextCanvas from "@/components/Canvas/TextCanvas";
 import TextValueChangeModal from "@/components/Canvas/TextValueChangeModal";
@@ -23,6 +24,14 @@ const ShapeEditor: React.FC = () => {
     y: 0,
   });
   const [selectedShape, setSelectedShape] = useState<IShape | null>(null);
+
+  useEffect(() => {
+    const items = localStorage.getItem("canvas");
+    const savedChanges = items ? JSON.parse(items) : [];
+    console.log(savedChanges);
+
+    setShapes(savedChanges);
+  }, []);
 
   const RESIZE_HANDLE_SIZE = 15;
 
@@ -146,7 +155,10 @@ const ShapeEditor: React.FC = () => {
             shapes={shapes}
           />
 
-          <DownloadButton setSelectedShape={setSelectedShape} />
+          <div className="center gap-[15px]">
+            <DownloadButton setSelectedShape={setSelectedShape} />
+            <SaveChanges shapes={shapes} />
+          </div>
         </div>
         <div
           className="w-full h-full mx-auto border-[1px] border-borderColor relative overflow-hidden bg-white"

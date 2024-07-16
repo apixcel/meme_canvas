@@ -1,7 +1,9 @@
+export type TFontWeight = 400 | 500 | 600 | 700;
+
 export interface ITextStyle {
   fontSize?: number;
   fontFamily?: string;
-  fontWeight?: 400 | 500 | 600 | 700;
+  fontWeight?: TFontWeight;
   fontStyle?: "italic" | "";
   textDecoration?: "underline";
   textAlign?: "center" | "start" | "end";

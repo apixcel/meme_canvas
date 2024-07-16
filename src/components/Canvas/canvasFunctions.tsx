@@ -1,4 +1,4 @@
-import { IShape } from "@/types/shape";
+import { IShape, TFontWeight } from "@/types/shape";
 import { SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -80,7 +80,6 @@ export const CanvasFuntions = (args: ICanvasProps) => {
       color: "",
       radius: 0,
       zIndex: shapes.length,
-
       id: uuidv4(),
       type: "image",
       rotation: 0,
@@ -137,8 +136,24 @@ export const shapeStyleFunction = (args: IShapeStyleProps) => {
 
       const { textStyle = {}, ...rest } = shape;
       const { fontSize = 15 } = textStyle;
-      const newFontSize = Math.max(fontSize + delta, 0); // Ensure font size does not go below 0
+      const newFontSize = Math.max(fontSize + delta, 0);
       const newTextStyle = { ...textStyle, fontSize: newFontSize };
+
+      return { ...rest, textStyle: newTextStyle };
+    });
+
+    setSelectedShape(
+      newShapes.find(({ id }) => id === selectedShape?.id) as IShape
+    );
+    setShapes(newShapes);
+  };
+  const updateFontWeight = (weight: TFontWeight) => {
+    const newShapes = shapes.map((shape) => {
+      if (shape.id !== selectedShape?.id) return shape;
+
+      const { textStyle = {}, ...rest } = shape;
+
+      const newTextStyle = { ...textStyle, fontWeight: weight };
 
       return { ...rest, textStyle: newTextStyle };
     });
@@ -153,5 +168,6 @@ export const shapeStyleFunction = (args: IShapeStyleProps) => {
     handleChangeColor,
     handleChangeRotation,
     updateFontSize,
+    updateFontWeight,
   };
 };

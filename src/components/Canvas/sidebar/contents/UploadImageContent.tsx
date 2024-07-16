@@ -1,11 +1,18 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { IShape } from "@/types/shape";
 import { CloudUploadIcon } from "lucide-react";
 import React from "react";
 interface IProps {
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+
 }
-const UploadImageContent: React.FC<IProps> = ({ handleImageUpload }) => {
+const UploadImageContent: React.FC<IProps> = ({
+  handleImageUpload,
+
+}) => {
+
+
   return (
     <div className="flex flex-col items-center justify-center w-full h-full bg-primary">
       <div className="flex flex-col items-center justify-center gap-4 text-center text-primary-foreground">

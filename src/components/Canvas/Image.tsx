@@ -1,4 +1,4 @@
-import { IShape } from "@/app/(pages)/canvas/page";
+import { IShape } from "@/app/(canvas)/canvas/page";
 import Image from "next/image";
 const ImageCanvas = ({ shape }: { shape: IShape }) => {
   if (shape.type !== "image") {
@@ -11,6 +11,7 @@ const ImageCanvas = ({ shape }: { shape: IShape }) => {
       height={shape.height}
       src={shape.imageUrl as string}
       alt="shape"
+      className="no-drag"
       style={{ width: `${shape.width}px`, height: "auto" }}
     />
   );

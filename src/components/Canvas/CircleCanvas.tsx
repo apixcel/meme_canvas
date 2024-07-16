@@ -1,4 +1,4 @@
-import { IShape } from "@/app/(pages)/canvas/page";
+import { IShape } from "@/types/shape";
 
 const CircleCanvas = ({ shape }: { shape: IShape }) => {
   return (

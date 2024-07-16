@@ -1,11 +1,15 @@
-import { IShape } from "@/app/(pages)/canvas/page";
+import { IShape } from "@/types/shape";
 
 const TextCanvas = ({ shape }: { shape: IShape }) => {
+  console.log(shape.textStyle?.fontSize);
+
   return (
     <p
-      contentEditable
-      onInput={(e) => console.log(e)}
-      style={{ color: shape.color }}
+      style={{
+        color: shape.color,
+        fontSize: `${shape.textStyle?.fontSize || 20}px`,
+        textAlign: `${shape.textStyle?.textAlign || "start"}`,
+      }}
     >
       {shape.text}
     </p>

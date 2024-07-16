@@ -1,5 +1,3 @@
-import Footer from "@/components/shared/Footer";
-import Header from "@/components/shared/Header";
 import ProviderContainer from "@/provider/ProviderContainer";
 import type { Metadata } from "next";
 import { Quicksand } from "next/font/google";
@@ -23,11 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={quickSand.className}>
-        <ProviderContainer>
-          <Header />
-          {children}
-          <Footer />
-        </ProviderContainer>
+        <ProviderContainer>{children}</ProviderContainer>
       </body>
     </html>
   );

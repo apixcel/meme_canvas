@@ -1,27 +1,14 @@
 "use client";
+
 import CircleCanvas from "@/components/Canvas/CircleCanvas";
 import ImageCanvas from "@/components/Canvas/Image";
 import RectCanvas from "@/components/Canvas/RectCanvas";
+import CanvasSideBar from "@/components/Canvas/sidebar/CanvasSideBar";
 import TextCanvas from "@/components/Canvas/TextCanvas";
-import { Button } from "@/components/ui/button";
+import TextValueChangeModal from "@/components/Canvas/TextValueChangeModal";
+import { IShape, ITextStyle } from "@/types/shape";
 import { Trash } from "lucide-react";
 import React, { MouseEvent, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-
-export interface IShape {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  id: string;
-  color: string;
-  rotation: number;
-  type: "rectangle" | "circle" | "image" | "text";
-  text?: string;
-  radius: number;
-  fontSize?: number;
-  imageUrl?: string;
-}
 
 const ShapeEditor: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -60,6 +47,15 @@ const ShapeEditor: React.FC = () => {
     const newShapes = shapes.filter(({ id }) => id !== selectedShape?.id);
     setShapes(newShapes);
   };
+  const editText = (value: string) => {
+    const newShapes = shapes.map((shape) => {
+      if (shape.id === selectedShape?.id) {
+        return { ...shape, text: value };
+      }
+      return shape;
+    });
+    setShapes(newShapes);
+  };
 
   // to delete the element
   useEffect(() => {
@@ -93,18 +89,15 @@ const ShapeEditor: React.FC = () => {
     } else if (resizing) {
       const newShapes = shapes.map((shape) => {
         if (shape.id === resizing.id) {
-          const deltaX = e.clientX - shape.x;
-          const deltaY = e.clientY - shape.y;
+          const deltaX = (e.clientX - shape.x) / 2;
+          const deltaY = (e.clientY - shape.y) / 1;
 
-          console.log({ deltaX, deltaY });
-
-          if (shape.type === "text" && shape.fontSize) {
+          if (shape.type === "text" && shape.textStyle?.fontSize) {
             const newFontSize = Math.max(deltaX, deltaY);
 
-            return {
-              ...shape,
-              fontSize: newFontSize / 8,
-            };
+            const shapCopy = { ...shape };
+            (shapCopy.textStyle as ITextStyle).fontSize = newFontSize / 8;
+            return shapCopy;
           } else if (shape.type === "rectangle" || shape.type === "image") {
             return {
               ...shape,
@@ -132,153 +125,34 @@ const ShapeEditor: React.FC = () => {
     setResizing(null);
   };
 
-  const addRectangle = () => {
-    const newShape: IShape = {
-      x: 50,
-      radius: 0,
-      y: 50,
-      width: 300,
-      height: 200,
-      color: "#4a4a4a",
-      id: uuidv4(),
-      type: "rectangle",
-      rotation: 0,
-    };
-    setShapes([...shapes, newShape]);
-  };
-
-  const addCircle = () => {
-    const newShape: IShape = {
-      x: 150,
-      y: 150,
-      radius: 100,
-      width: 200,
-      height: 200,
-      color: "#4a4a4a",
-      id: uuidv4(),
-      type: "circle",
-      rotation: 0,
-    };
-    setShapes([...shapes, newShape]);
-  };
-
-  const addText = () => {
-    const newShape: IShape = {
-      x: 250,
-      y: 250,
-      radius: 0,
-      width: 0,
-      height: 0,
-      color: "#000000",
-      id: uuidv4(),
-      type: "text",
-      rotation: 0,
-      text: "Sample Text",
-      fontSize: 20,
-    };
-    setShapes([...shapes, newShape]);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const imageUrl = URL.createObjectURL(file);
-    const newShape: IShape = {
-      x: 200,
-      y: 200,
-      width: 100,
-      height: 100,
-      color: "",
-      radius: 0,
-      id: uuidv4(),
-      type: "image",
-      rotation: 0,
-      imageUrl,
-    };
-    setShapes([...shapes, newShape]);
-  };
-
-  const handleChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const color = e.target.value;
-    if (!selectedShape) return;
-    const newShape = shapes.map((shape) => {
-      if (shape.id === selectedShape.id) {
-        return { ...shape, color };
-      }
-      return shape;
-    });
-    setShapes(newShape);
-  };
-
-  const handleChangeRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rotation = Number(e.target.value);
-    if (!selectedShape) return;
-    const newShape = shapes.map((shape) => {
-      if (shape.id === selectedShape.id) {
-        return { ...shape, rotation };
-      }
-      return shape;
-    });
-    setSelectedShape(
-      newShape.find(({ id }) => id === selectedShape.id) as IShape
-    );
-    setShapes(newShape);
-  };
-
   return (
     <div
-      className="w-full relative"
-      onMouseMove={handleMouseMove}
+      className="w-full h-screen relative flex items-start justify-start py-[20px] bg-slate-100 gap-[20px]"
       onMouseUp={handleMouseUp}
+      onMouseMove={handleMouseMove}
     >
-      <div className="flex items-center gap-[10px] mb-[20px] select-none">
-        <Button onClick={addRectangle} className="bg-slate-400">
-          Add Rectangle
-        </Button>
-        <Button onClick={addCircle} className="bg-slate-400">
-          Add Circle
-        </Button>
-        <Button onClick={addText} className="bg-slate-400">
-          Add Text
-        </Button>
-
-        <div className="center gap-[10px]">
-          <p>Rotation {selectedShape?.rotation || 0} Deg:</p>
-          <input
-            type="range"
-            max={360}
-            value={selectedShape?.rotation || 0}
-            onChange={handleChangeRotation}
-          />
-        </div>
-
-        <div className="center gap-[5px]">
-          <p>Color:</p>
-          <input
-            type="color"
-            value={selectedShape?.color || "#4a4a4a"}
-            onChange={handleChangeColor}
-            disabled={!selectedShape}
-            className="disabled:opacity-[0.5]"
-          />
-        </div>
-
-        <input type="file" onChange={handleImageUpload} />
+      <div className="h-full" onClick={() => setSelectedShape(null)}>
+        <CanvasSideBar
+          setSelectedShape={setSelectedShape}
+          selectedShape={selectedShape}
+          setShapes={setShapes}
+          shapes={shapes}
+        />
       </div>
 
-      <div className="w-[90vw] h-screen mx-auto border-[1px] border-borderColor relative overflow-hidden">
+      <div className="w-full h-full mx-auto border-[1px] border-borderColor relative overflow-hidden bg-white">
         {shapes.map((shape) => (
           <div
             key={shape.id}
             style={{
+              zIndex: shape.zIndex,
               position: "absolute",
               left: shape.x,
               top: shape.y,
               transform: `rotate(${shape.rotation}deg) scale(${1})`,
               display: shape.type === "text" ? "inline-block" : "block",
-              fontSize: shape.type === "text" ? `${shape.fontSize}px` : "unset",
-              lineHeight:
-                shape.type === "text" ? `${shape.fontSize}px` : "unset",
+
+              userSelect: "none",
             }}
             onMouseDown={(e) => handleMouseDown(e, shape)}
             className={`${
@@ -312,11 +186,19 @@ const ShapeEditor: React.FC = () => {
                 ></div>
 
                 <button
-                  className="absolute top-[-35px] shadow-md left-0 w-[30px] h-[30px] bg-white rounded-full center"
+                  className="absolute top-[-40px] shadow-md left-0 w-[30px] h-[30px] bg-white rounded-full center"
                   onClick={removeItem}
                 >
                   <Trash className="w-[15px]" />
                 </button>
+                {shape.type === "text" ? (
+                  <TextValueChangeModal
+                    value={shape.text || ""}
+                    onSubmit={editText}
+                  />
+                ) : (
+                  ""
+                )}
               </>
             ) : (
               ""

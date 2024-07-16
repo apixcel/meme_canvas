@@ -5,29 +5,21 @@ import { CanvasFuntions } from "../canvasFunctions";
 import SidebarLinks from "./SidebarLinks";
 import AddTextContent from "./contents/AddTextContent";
 import ShapeContent from "./contents/ShapeContent";
+import UploadImageContent from "./contents/UploadImageContent";
 
 interface IProps {
-
   shapes: IShape[];
   setShapes: React.Dispatch<SetStateAction<IShape[]>>;
 }
 
-const CanvasSideBar: React.FC<IProps> = ({
-
-  shapes,
-  setShapes,
-}) => {
+const CanvasSideBar: React.FC<IProps> = ({ shapes, setShapes }) => {
   const [tab, setTab] = useState("shape");
 
-  const {
-    addCircle,
-    addRectangle,
-    addText,
-    handleImageUpload,
-  } = CanvasFuntions({
-    shapes,
-    setShapes,
-  });
+  const { addCircle, addRectangle, addText, handleImageUpload } =
+    CanvasFuntions({
+      shapes,
+      setShapes,
+    });
 
   return (
     // <div className="flex flex-col items-center gap-[10px] mb-[20px] select-none">
@@ -73,6 +65,9 @@ const CanvasSideBar: React.FC<IProps> = ({
           <ShapeContent addCircle={addCircle} addRectangle={addRectangle} />
         )}
         {tab === "text" && <AddTextContent addText={addText} />}
+        {tab === "image" && (
+          <UploadImageContent handleImageUpload={handleImageUpload} />
+        )}
       </div>
     </div>
   );

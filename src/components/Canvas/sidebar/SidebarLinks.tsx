@@ -1,3 +1,4 @@
+import { SendToBack } from "lucide-react";
 import React, { SetStateAction } from "react";
 import { IoIosImages } from "react-icons/io";
 import { IoShapes, IoText } from "react-icons/io5";
@@ -23,6 +24,14 @@ const SidebarLinks: React.FC<IProps> = ({ setTab, tab }) => {
         }`}
       >
         <IoText /> Add text
+      </button>
+      <button
+        onClick={() => setTab("position")}
+        className={`text-white center gap-[5px] p-[8px] flex-col rounded-[5px] hover:bg-[#52565c] ${
+          tab === "image" ? "bg-[#52565c]" : ""
+        }`}
+      >
+        <SendToBack /> Position
       </button>
       <button
         onClick={() => setTab("image")}

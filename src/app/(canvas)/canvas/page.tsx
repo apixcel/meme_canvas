@@ -110,8 +110,6 @@ const ShapeEditor: React.FC = () => {
             (shapCopy.textStyle as ITextStyle).fontSize = newFontSize / 8;
             return shapCopy;
           } else {
-            const element = document.getElementById(shape.id) as HTMLElement;
-
             const deltaX = e.movementX;
             const deltaY = e.movementY;
 
@@ -140,7 +138,12 @@ const ShapeEditor: React.FC = () => {
       onMouseMove={handleMouseMove}
     >
       <div className="h-full" onClick={() => setSelectedShape(null)}>
-        <CanvasSideBar setShapes={setShapes} shapes={shapes} />
+        <CanvasSideBar
+          setShapes={setShapes}
+          shapes={shapes}
+          selectedShape={selectedShape}
+          setSelectedShape={setSelectedShape}
+        />
       </div>
 
       <div className="flex flex-col justify-start items-start gap-[10px] w-full h-full">
@@ -169,7 +172,7 @@ const ShapeEditor: React.FC = () => {
                 position: "absolute",
                 left: shape.x,
                 top: shape.y,
-                transform: `rotate(${shape.rotation}deg) scale(${1})`,
+                transform: `rotate(${shape.rotation}deg)`,
                 display: shape.type === "text" ? "inline-block" : "block",
 
                 userSelect: "none",

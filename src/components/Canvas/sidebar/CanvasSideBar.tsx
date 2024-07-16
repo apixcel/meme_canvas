@@ -4,15 +4,23 @@ import { IShape } from "@/types/shape";
 import { CanvasFuntions } from "../canvasFunctions";
 import SidebarLinks from "./SidebarLinks";
 import AddTextContent from "./contents/AddTextContent";
+import ChangePosition from "./contents/ChangePosition";
 import ShapeContent from "./contents/ShapeContent";
 import UploadImageContent from "./contents/UploadImageContent";
 
 interface IProps {
   shapes: IShape[];
   setShapes: React.Dispatch<SetStateAction<IShape[]>>;
+  setSelectedShape: React.Dispatch<SetStateAction<IShape | null>>;
+  selectedShape: IShape | null;
 }
 
-const CanvasSideBar: React.FC<IProps> = ({ shapes, setShapes }) => {
+const CanvasSideBar: React.FC<IProps> = ({
+  shapes,
+  setShapes,
+  selectedShape,
+  setSelectedShape,
+}) => {
   const [tab, setTab] = useState("shape");
 
   const { addCircle, addRectangle, addText, handleImageUpload } =
@@ -67,6 +75,14 @@ const CanvasSideBar: React.FC<IProps> = ({ shapes, setShapes }) => {
         {tab === "text" && <AddTextContent addText={addText} />}
         {tab === "image" && (
           <UploadImageContent handleImageUpload={handleImageUpload} />
+        )}
+        {tab === "position" && (
+          <ChangePosition
+            setShapes={setShapes}
+            shapes={shapes}
+            selectedShape={selectedShape}
+            setSelectedShape={setSelectedShape}
+          />
         )}
       </div>
     </div>

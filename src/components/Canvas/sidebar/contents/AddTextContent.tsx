@@ -1,4 +1,5 @@
 import React from "react";
+import { PhotoshopPicker } from "react-color";
 interface IProps {
   addText: () => void;
 }
@@ -15,6 +16,7 @@ const AddTextContent: React.FC<IProps> = ({ addText }) => {
           Add a text
         </button>
       </div>
+      <PhotoshopPicker />
     </div>
   );
 };

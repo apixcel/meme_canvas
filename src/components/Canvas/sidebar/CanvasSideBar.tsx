@@ -7,15 +7,13 @@ import AddTextContent from "./contents/AddTextContent";
 import ShapeContent from "./contents/ShapeContent";
 
 interface IProps {
-  setSelectedShape: React.Dispatch<SetStateAction<IShape | null>>;
-  selectedShape: IShape | null;
+
   shapes: IShape[];
   setShapes: React.Dispatch<SetStateAction<IShape[]>>;
 }
 
 const CanvasSideBar: React.FC<IProps> = ({
-  setSelectedShape,
-  selectedShape,
+
   shapes,
   setShapes,
 }) => {
@@ -25,12 +23,8 @@ const CanvasSideBar: React.FC<IProps> = ({
     addCircle,
     addRectangle,
     addText,
-    handleChangeColor,
-    handleChangeRotation,
     handleImageUpload,
   } = CanvasFuntions({
-    setSelectedShape,
-    selectedShape,
     shapes,
     setShapes,
   });

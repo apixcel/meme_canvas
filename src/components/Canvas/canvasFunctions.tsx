@@ -2,41 +2,18 @@ import { IShape } from "@/types/shape";
 import { SetStateAction } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-interface IProps {
+interface ICanvasProps {
+  shapes: IShape[];
+  setShapes: React.Dispatch<SetStateAction<IShape[]>>;
+}
+interface IShapeStyleProps {
   setSelectedShape: React.Dispatch<SetStateAction<IShape | null>>;
   selectedShape: IShape | null;
   shapes: IShape[];
   setShapes: React.Dispatch<SetStateAction<IShape[]>>;
 }
-export const CanvasFuntions = (args: IProps) => {
-  const { selectedShape, setSelectedShape, setShapes, shapes } = args;
-
-  const handleChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const color = e.target.value;
-    if (!selectedShape) return;
-    const newShape = shapes.map((shape) => {
-      if (shape.id === selectedShape.id) {
-        return { ...shape, color };
-      }
-      return shape;
-    });
-    setShapes(newShape);
-  };
-
-  const handleChangeRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rotation = Number(e.target.value);
-    if (!selectedShape) return;
-    const newShape = shapes.map((shape) => {
-      if (shape.id === selectedShape.id) {
-        return { ...shape, rotation };
-      }
-      return shape;
-    });
-    setSelectedShape(
-      newShape.find(({ id }) => id === selectedShape.id) as IShape
-    );
-    setShapes(newShape);
-  };
+export const CanvasFuntions = (args: ICanvasProps) => {
+  const { setShapes, shapes } = args;
 
   const addCircle = () => {
     const newShape: IShape = {
@@ -113,11 +90,68 @@ export const CanvasFuntions = (args: IProps) => {
   };
 
   return {
-    handleChangeColor,
-    handleChangeRotation,
     handleImageUpload,
     addCircle,
     addRectangle,
     addText,
+  };
+};
+
+export const shapeStyleFunction = (args: IShapeStyleProps) => {
+  const { selectedShape, setSelectedShape, setShapes, shapes } = args;
+  const handleChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const color = e.target.value;
+
+    if (!selectedShape) return;
+    const newShape = shapes.map((shape) => {
+      if (shape.id === selectedShape.id) {
+        return { ...shape, color };
+      }
+      return shape;
+    });
+    setSelectedShape(
+      newShape.find(({ id }) => id === selectedShape.id) as IShape
+    );
+    setShapes(newShape);
+  };
+
+  const handleChangeRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rotation = Number(e.target.value);
+    if (!selectedShape) return;
+    const newShape = shapes.map((shape) => {
+      if (shape.id === selectedShape.id) {
+        return { ...shape, rotation };
+      }
+      return shape;
+    });
+    setSelectedShape(
+      newShape.find(({ id }) => id === selectedShape.id) as IShape
+    );
+    setShapes(newShape);
+  };
+
+  const updateFontSize = (delta: number) => {
+    if (selectedShape?.textStyle?.fontSize === 0 && delta < 0) return;
+    const newShapes = shapes.map((shape) => {
+      if (shape.id !== selectedShape?.id) return shape;
+
+      const { textStyle = {}, ...rest } = shape;
+      const { fontSize = 15 } = textStyle;
+      const newFontSize = Math.max(fontSize + delta, 0); // Ensure font size does not go below 0
+      const newTextStyle = { ...textStyle, fontSize: newFontSize };
+
+      return { ...rest, textStyle: newTextStyle };
+    });
+
+    setSelectedShape(
+      newShapes.find(({ id }) => id === selectedShape?.id) as IShape
+    );
+    setShapes(newShapes);
+  };
+
+  return {
+    handleChangeColor,
+    handleChangeRotation,
+    updateFontSize,
   };
 };

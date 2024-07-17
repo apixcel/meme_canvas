@@ -28,7 +28,7 @@ const SidebarLinks: React.FC<IProps> = ({ setTab, tab }) => {
       <button
         onClick={() => setTab("position")}
         className={`text-white center gap-[5px] p-[8px] flex-col rounded-[5px] hover:bg-[#52565c] ${
-          tab === "image" ? "bg-[#52565c]" : ""
+          tab === "position" ? "bg-[#52565c]" : ""
         }`}
       >
         <SendToBack /> Position

@@ -1,4 +1,4 @@
-export type TFontWeight = 400 | 500 | 600 | 700;
+export type TFontWeight = 300 | 400 | 500 | 600 | 700;
 
 export interface ITextStyle {
   fontSize?: number;

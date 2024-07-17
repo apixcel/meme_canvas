@@ -18,7 +18,7 @@ const SelecteFontWeight: React.FC<IProps> = ({ updateFontWeight }) => {
   return (
     <Select onValueChange={(e) => updateFontWeight(Number(e) as TFontWeight)}>
       <SelectTrigger className="w-[180px] border-borderColor">
-        <SelectValue placeholder="Select a fruit" />
+        <SelectValue placeholder="Select font weight" />
       </SelectTrigger>
       <SelectContent className="bg-white">
         <SelectGroup className="cursor-pointer">

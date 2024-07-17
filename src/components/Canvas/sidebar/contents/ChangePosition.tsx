@@ -145,7 +145,7 @@ const ChangePosition: React.FC<IProps> = ({
             items={shapes}
             strategy={verticalListSortingStrategy}
           >
-            {shapes.map((shape) => (
+            {[...shapes].reverse().map((shape) => (
               <Shape
                 key={shape.id}
                 shape={shape}

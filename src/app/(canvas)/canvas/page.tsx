@@ -4,15 +4,15 @@ import CircleCanvas from "@/components/Canvas/CircleCanvas";
 import ImageCanvas from "@/components/Canvas/Image";
 import RectCanvas from "@/components/Canvas/RectCanvas";
 import CanvasSideBar from "@/components/Canvas/sidebar/CanvasSideBar";
-import DownloadButton from "@/components/Canvas/sidebar/topBar/DownloadButton";
-import SaveChanges from "@/components/Canvas/sidebar/topBar/SaveChanges";
-import TopBar from "@/components/Canvas/sidebar/topBar/TopBar";
 import TextCanvas from "@/components/Canvas/TextCanvas";
 import TextValueChangeModal from "@/components/Canvas/TextValueChangeModal";
+import DownloadButton from "@/components/Canvas/topBar/DownloadButton";
+import SaveChanges from "@/components/Canvas/topBar/SaveChanges";
+import TopBar from "@/components/Canvas/topBar/TopBar";
 import { IShape, ITextStyle } from "@/types/shape";
 import { Trash } from "lucide-react";
 import React, { MouseEvent, useEffect, useState } from "react";
-
+import { v4 as uuid } from "uuid";
 const ShapeEditor: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -75,6 +75,37 @@ const ShapeEditor: React.FC = () => {
       if (keycode === 46 && selectedShape) {
         const newShapes = shapes.filter(({ id }) => id !== selectedShape.id);
         setShapes(newShapes);
+      }
+
+      if (e.ctrlKey && e.key === "c" && selectedShape) {
+        navigator.clipboard.writeText(selectedShape.id || "").catch((err) => {
+          console.error("Could not copy text: ", err);
+        });
+      }
+
+      if (e.ctrlKey && e.key === "v") {
+        navigator.clipboard
+          .readText()
+          .then((pastedText) => {
+            const shapeToClone = shapes.find(
+              (shape) => shape.id === pastedText
+            );
+            if (shapeToClone) {
+              const newCloneShape = {
+                ...shapeToClone,
+                x: 80,
+                y: 50,
+                zIndex: shapes.length,
+                id: uuid(),
+              };
+
+              setShapes([newCloneShape, ...shapes]);
+              setSelectedShape(newCloneShape);
+            }
+          })
+          .catch((err) => {
+            console.error("Could not read text from clipboard: ", err);
+          });
       }
     };
 

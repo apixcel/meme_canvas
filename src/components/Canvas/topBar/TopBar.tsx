@@ -1,6 +1,6 @@
 import { IShape } from "@/types/shape";
 import React, { SetStateAction } from "react";
-import { shapeStyleFunction } from "../../canvasFunctions";
+import { shapeStyleFunction } from "../canvasFunctions";
 import ChangeColor from "./ChangeColor";
 import SelecteFontWeight from "./SelecteFontWeight";
 import UpdateFontSize from "./UpdateFontSize";
@@ -16,12 +16,13 @@ const TopBar: React.FC<IProps> = ({
   shapes,
   setShapes,
 }) => {
-  const { updateFontSize, handleChangeColor ,updateFontWeight} = shapeStyleFunction({
-    setSelectedShape,
-    selectedShape,
-    shapes,
-    setShapes,
-  });
+  const { updateFontSize, handleChangeColor, updateFontWeight } =
+    shapeStyleFunction({
+      setSelectedShape,
+      selectedShape,
+      shapes,
+      setShapes,
+    });
 
   return (
     <div className="flex items-center gap-[20px]">

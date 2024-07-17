@@ -9,7 +9,7 @@ import TextValueChangeModal from "@/components/Canvas/TextValueChangeModal";
 import DownloadButton from "@/components/Canvas/topBar/DownloadButton";
 import SaveChanges from "@/components/Canvas/topBar/SaveChanges";
 import TopBar from "@/components/Canvas/topBar/TopBar";
-import { IShape, ITextStyle } from "@/types/shape";
+import { IShape } from "@/types/shape";
 import { Trash } from "lucide-react";
 import React, { MouseEvent, useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -28,7 +28,6 @@ const ShapeEditor: React.FC = () => {
   useEffect(() => {
     const items = localStorage.getItem("canvas");
     const savedChanges = items ? JSON.parse(items) : [];
-    console.log(savedChanges);
 
     setShapes(savedChanges);
   }, []);
@@ -131,15 +130,15 @@ const ShapeEditor: React.FC = () => {
     } else if (resizing) {
       const newShapes = shapes.map((shape) => {
         if (shape.id === resizing.id) {
-          const deltaX = (e.clientX - shape.x) / 2;
-          const deltaY = (e.clientY - shape.y) / 2;
-
           if (shape.type === "text" && shape.textStyle?.fontSize) {
+            const deltaX = (e.clientX - shape.x) / 2;
+            const deltaY = (e.clientY - shape.y) / 2;
             const newFontSize = Math.max(deltaX, deltaY);
 
-            const shapCopy = { ...shape };
-            (shapCopy.textStyle as ITextStyle).fontSize = newFontSize / 8;
-            return shapCopy;
+            const { textStyle = {}, ...rest } = shape;
+            const newTextStyle = { ...textStyle, fontSize: newFontSize };
+
+            return { ...rest, textStyle: newTextStyle };
           } else {
             const deltaX = e.movementX;
             const deltaY = e.movementY;

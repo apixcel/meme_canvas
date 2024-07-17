@@ -99,7 +99,7 @@ const ShapeEditor: React.FC = () => {
                 id: uuid(),
               };
 
-              setShapes([newCloneShape, ...shapes]);
+              setShapes([...shapes, newCloneShape]);
               setSelectedShape(newCloneShape);
             }
           })

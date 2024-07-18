@@ -204,11 +204,11 @@ const ShapeEditor: React.FC = () => {
       onMouseUp={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
-      <div className="h-full" onClick={() => setSelectedShape(null)}>
+      <div className="h-full w-[550px]" onClick={() => setSelectedShape(null)}>
         <CanvasSideBar />
       </div>
 
-      <div className="flex flex-col justify-start items-start gap-[10px] w-full h-full">
+      <div className="flex w-[calc(100%-550px)] h-full flex-col justify-start items-start gap-[10px]">
         <div className="w-full h-[80px] bg-white flex items-center justify-between px-[30px]">
           <TopBar />
 
@@ -221,10 +221,9 @@ const ShapeEditor: React.FC = () => {
           className="max-w-full h-full mx-auto border-[1px] border-borderColor relative overflow-hidden bg-white"
           id="canvas"
           style={{
-            width: data?.data?.canvas.width,
-            aspectRatio:
-              (data?.data?.canvas.width || 1) /
-              (data?.data?.canvas.height || 1),
+            // width: data?.data?.canvas.width,
+            aspectRatio: `${data?.data?.canvas.width || 1} /
+              ${data?.data?.canvas.height || 1}`,
           }}
         >
           {shapes.map((shape) => (

@@ -51,6 +51,7 @@ const UploadImageContent = () => {
     if (!file) return;
 
     const formData = new FormData();
+    formData.append("file", file);
 
     const toastId = toast.loading("Pleas wait uploading your image");
 

@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { updateShape } from "@/redux/features/project/project.slice";
+import {
+  setSelectedShape,
+  updateShape,
+} from "@/redux/features/project/project.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import { MinusIcon, PlusIcon } from "lucide-react";
@@ -17,6 +20,7 @@ const UpdateFontSize: React.FC<IProps> = ({ updateFontSize }) => {
   const increaseFontSize = () => {
     const shape = updateFontSize(1);
     if (!shape) return;
+    dispatch(setSelectedShape(shape));
 
     dispatch(updateShape(shape));
   };
@@ -24,6 +28,7 @@ const UpdateFontSize: React.FC<IProps> = ({ updateFontSize }) => {
     const shape = updateFontSize(-1);
     if (!shape) return;
 
+    dispatch(setSelectedShape(shape));
     dispatch(updateShape(shape));
   };
 

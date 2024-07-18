@@ -47,6 +47,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
       if (token) {
         api.dispatch(setUser({ user }));
+        Cookies.set("accessToken", token);
         result = await baseQuery(args, api, extraOptions);
       }
     } catch (error) {
@@ -60,6 +61,6 @@ export const api = createApi({
   reducerPath: "api",
 
   baseQuery: baseQueryWithRefreshToken,
-  tagTypes: ["user", "project"],
+  tagTypes: ["user", "project", "image"],
   endpoints: () => ({}),
 });

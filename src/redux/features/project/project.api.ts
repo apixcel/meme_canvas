@@ -28,6 +28,26 @@ const projectApi = api.injectEndpoints({
         body: shapes,
       }),
     }),
+    uploadImage: builder.mutation<{ data: string }, FormData>({
+      query: (file) => ({
+        url: `/project/upload/image`,
+        method: "POST",
+        body: file,
+      }),
+      invalidatesTags: ["image"],
+    }),
+    getImages: builder.query<{ data: { url: string }[] }, undefined>({
+      query: () => ({
+        url: `/project/images`,
+        method: "GET",
+      }),
+      providesTags: ["image"],
+    }),
   }),
 });
-export const { useGetProjectQuery, useUpdateProjectShapeMutation } = projectApi;
+export const {
+  useGetProjectQuery,
+  useUpdateProjectShapeMutation,
+  useUploadImageMutation,
+  useGetImagesQuery,
+} = projectApi;

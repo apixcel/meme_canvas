@@ -6,11 +6,6 @@ export type TCustomer = {
   contactNumber: string;
   address: string;
   role: string;
-  createdAt:string
+  createdAt: string;
   [key: string]: any;
 };
-
-
-export type TCustomerOrder = {
-  
-}

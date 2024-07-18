@@ -1,21 +1,59 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  useGetImagesQuery,
+  useUploadImageMutation,
+} from "@/redux/features/project/project.api";
 import { addShape } from "@/redux/features/project/project.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
-import { CloudUploadIcon } from "lucide-react";
+import Cookies from "js-cookie";
+import Image from "next/image";
 import React from "react";
-
 import { v4 as uuidv4 } from "uuid";
+
+const url = process.env.NEXT_PUBLIC_API_URL as string;
 
 const UploadImageContent = () => {
   const { shapes } = useAppSelector((state) => state.shapes);
   const dispatch = useAppDispatch();
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const [uploadImage] = useUploadImageMutation();
+  const { data } = useGetImagesQuery(undefined);
+
+  const token = Cookies.get("accessToken");
+  const handleImageUpload = async (
+    e?: React.ChangeEvent<HTMLInputElement> | "",
+    url?: string
+  ) => {
+    if (url) {
+      const newShape: IShape = {
+        x: 200,
+        y: 200,
+        width: 100,
+        height: 100,
+        color: "",
+        radius: 0,
+        zIndex: shapes.length,
+        id: uuidv4(),
+        type: "image",
+        rotation: 0,
+        imageUrl: url,
+      };
+      dispatch(addShape(newShape));
+
+      return;
+    }
+
+    const file = (e as React.ChangeEvent<HTMLInputElement>).target.files?.[0];
+
     if (!file) return;
-    const imageUrl = URL.createObjectURL(file);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const { data } = await uploadImage(formData);
+
     const newShape: IShape = {
       x: 200,
       y: 200,
@@ -27,31 +65,44 @@ const UploadImageContent = () => {
       id: uuidv4(),
       type: "image",
       rotation: 0,
-      imageUrl,
+      imageUrl: data?.data || "",
     };
     dispatch(addShape(newShape));
   };
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full bg-primary">
-      <div className="flex flex-col items-center justify-center gap-4 text-center text-primary-foreground">
-        <CloudUploadIcon className="w-16 h-16 text-[#cbcbcb]" />
-        <h2 className="text-3xl font-bold text-[#cbcbcb]">Upload an Image</h2>
-        <p className="text-lg text-muted-foreground text-[#a8a8a8]">
-          Drag and drop your image here or click to select a file.
-        </p>
+    <div className="flex flex-col items-center justify-start w-full h-full bg-primary  px-[10px] gap-[20px]">
+      <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
         <Input
           type="file"
-          className="hidden"
+          className="invisible"
           id="file"
           accept="image/*"
           onChange={handleImageUpload}
         />
         <Label
-          className="px-6 py-2 text-lg text-[#cbcbcb] bg-slate-900"
+          className=" py-2 text-lg text-[#cbcbcb] bg-[#5c2ed2] w-full rounded-[8px] cursor-pointer"
           htmlFor="file"
         >
           Choose File
         </Label>
+      </div>
+      <div className="flex flex-col gap-[10px] w-full">
+        <h3 className="text-[25px] font-[700] text-[#e1e1e1]">
+          Your recent images
+        </h3>
+        <div className="flex items-center justify-start flex-wrap gap-[10px] w-full">
+          {data?.data.map(({ url }, i) => (
+            <Image
+              key={i + "image"}
+              className="w-[auto] h-[140px] cursor-pointer"
+              width={350}
+              height={150}
+              src={url}
+              alt="images"
+              onClick={() => handleImageUpload("", url)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

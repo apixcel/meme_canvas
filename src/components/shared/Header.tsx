@@ -32,22 +32,16 @@ const Header = () => {
             </Link>
           ))}
         </nav>
-        {isLoading ? (
-          ""
-        ) : (
-          <div className="flex gap-3 items-center">
-            {user ? (
-              <AccountPanel />
-            ) : (
-              <Link
-                href="/login"
-                className="text-slate-700 hover:text-green-500"
-              >
-                Login
-              </Link>
-            )}
-          </div>
-        )}
+
+        <div className="flex gap-3 items-center">
+          {user ? (
+            <AccountPanel />
+          ) : (
+            <Link href="/login" className="text-slate-700 hover:text-green-500">
+              Login
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

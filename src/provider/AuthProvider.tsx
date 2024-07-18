@@ -9,7 +9,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const token = Cookies.get("accessToken");
 
   const { data, isSuccess, isError, isLoading } = useGetAuthorQuery(
-    token || ""
+    token || "",
+    { skip: !token }
   );
   const dispatch = useDispatch();
 

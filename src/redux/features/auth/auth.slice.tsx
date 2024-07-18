@@ -16,7 +16,6 @@ const userSlice = createSlice({
   reducers: {
     setUser(state, action: PayloadAction<{ user: TCustomer | null }>) {
       state.user = action.payload.user;
-      console.log(action.payload.user);
 
       state.isLoading = false;
     },
@@ -31,5 +30,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, logout,setLoading } = userSlice.actions;
+export const { setUser, logout, setLoading } = userSlice.actions;
 export default userSlice.reducer;

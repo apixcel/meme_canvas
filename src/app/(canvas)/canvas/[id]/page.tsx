@@ -45,6 +45,7 @@ const ShapeEditor: React.FC = () => {
   const debouncedUpdate = useMemo(
     () =>
       debounce((id, shapes) => {
+        if (!shapes.length) return;
         update({ id, shapes });
       }, 1000),
     [update]

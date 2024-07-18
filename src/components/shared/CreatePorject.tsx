@@ -1,6 +1,8 @@
 import { useCreateProjectMutation } from "@/redux/features/project/project.api";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { useRouter } from "next/navigation";
 import React from "react";
+import { toast } from "sonner";
 import * as Yup from "yup";
 import { Button } from "../ui/button";
 import {
@@ -35,11 +37,12 @@ const validationSchema = Yup.object().shape({
 
 type TValues = typeof initialValues;
 const CreateProject: React.FC<IPorps> = ({ children }) => {
+  const router = useRouter();
   const [createProject] = useCreateProjectMutation();
 
   const handleCreateProject = async (values: TValues) => {
     const { height, width, projectName } = values;
-
+    const closeBtn = document.getElementById("cancel") as HTMLElement;
     const payload = {
       canvas: {
         width: parseInt(width),
@@ -47,8 +50,18 @@ const CreateProject: React.FC<IPorps> = ({ children }) => {
       },
       projectName: projectName,
     };
+    const toastId = toast.loading("Please wait...");
+    try {
+      closeBtn.click();
+      const data = await createProject(payload);
+      router.push(`/canvas/${data?.data?.data._id}`);
+    } catch (error) {
+      console.log(error);
 
-    await createProject(payload);
+      toast.error("Something went wrong");
+    } finally {
+      toast.dismiss(toastId);
+    }
   };
 
   return (
@@ -107,6 +120,7 @@ const CreateProject: React.FC<IPorps> = ({ children }) => {
               <Button
                 variant="destructive"
                 className="mr-auto text-white"
+                type="button"
                 id="cancel"
               >
                 Cancel

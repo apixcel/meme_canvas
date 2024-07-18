@@ -27,10 +27,11 @@ import { useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 const ShapeEditor: React.FC = () => {
   const { id } = useParams();
-  const { data } = useGetProjectQuery(id as string);
+  const { data, isFetching } = useGetProjectQuery(id as string);
   const [update] = useUpdateProjectShapeMutation();
 
   const { shapes, selectedShape } = useAppSelector((state) => state.shapes);
+
   const dispatch = useDispatch();
 
   const [showSidebar, setShowSidebar] = useState(false);
@@ -41,6 +42,7 @@ const ShapeEditor: React.FC = () => {
     x: 0,
     y: 0,
   });
+
   // => debouncing
   const debouncedUpdate = useMemo(
     () =>
@@ -193,7 +195,9 @@ const ShapeEditor: React.FC = () => {
     setDragging(null);
     setResizing(null);
   };
-
+  if (isFetching) {
+    return <></>;
+  }
   return (
     <div
       className="w-full h-screen relative flex items-start justify-start py-[20px] bg-slate-100 gap-[20px]"
@@ -214,8 +218,14 @@ const ShapeEditor: React.FC = () => {
           </div>
         </div>
         <div
-          className="w-full h-full mx-auto border-[1px] border-borderColor relative overflow-hidden bg-white"
+          className="max-w-full h-full mx-auto border-[1px] border-borderColor relative overflow-hidden bg-white"
           id="canvas"
+          style={{
+            width: data?.data?.canvas.width,
+            aspectRatio:
+              (data?.data?.canvas.width || 1) /
+              (data?.data?.canvas.height || 1),
+          }}
         >
           {shapes.map((shape) => (
             <div

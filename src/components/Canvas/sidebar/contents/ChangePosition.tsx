@@ -20,6 +20,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Image from "next/image";
 import React, { SetStateAction } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 
@@ -71,13 +72,10 @@ const Shape: React.FC<{
 
               borderRadius: `${shape.radius}%`,
             }}
-          >
-            {shape.text}
-          </div>
+          />
         )}
         {shape.type === "circle" && (
           <div
-            ref={setNodeRef}
             {...attributes}
             {...listeners}
             style={{
@@ -87,13 +85,10 @@ const Shape: React.FC<{
 
               borderRadius: `${shape.radius}%`,
             }}
-          >
-            {shape.text}
-          </div>
+          />
         )}
         {shape.type === "text" && (
           <div
-            ref={setNodeRef}
             {...attributes}
             {...listeners}
             style={{
@@ -104,6 +99,22 @@ const Shape: React.FC<{
           >
             {shape.text}
           </div>
+        )}
+        {shape.type === "image" && (
+          <Image
+            width={60}
+            height={60}
+            alt=""
+            src={shape.imageUrl as string}
+            ref={setNodeRef}
+            {...attributes}
+            {...listeners}
+            style={{
+              textAlign: "center",
+              height: "auto",
+              borderRadius: `${shape.radius}%`,
+            }}
+          />
         )}
       </div>
     </div>

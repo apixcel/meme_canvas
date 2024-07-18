@@ -5,7 +5,7 @@ import { IShape } from "@/types/shape";
 const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // Create blog post
-    createProject: builder.mutation({
+    createProject: builder.mutation<{ data: IProjects }, any>({
       query: (payload) => ({
         url: "/project/create",
         method: "POST",

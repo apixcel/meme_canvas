@@ -40,14 +40,14 @@ const ProjectCard = ({ data }: { data: IProjects }) => {
               <CalendarDaysIcon className="w-4 h-4" />
               <span>
                 <span className="font-[600]">Created</span>{" "}
-                {formatDistanceToNow(updatedAt, { addSuffix: true })}
+                {formatDistanceToNow(updatedAt, { addSuffix: false })} ago
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <CalendarDaysIcon className="w-4 h-4" />
               <span>
                 <span className="font-[600]">Updated</span>{" "}
-                {formatDistanceToNow(updatedAt, { addSuffix: true })}
+                {formatDistanceToNow(updatedAt, { addSuffix: false })} ago
               </span>
             </div>
           </div>

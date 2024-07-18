@@ -13,5 +13,5 @@ export interface IProject {
     width: number;
     height: number;
   };
-  shapes: IShape[];
+  shapes: IShape[] | [];
 }

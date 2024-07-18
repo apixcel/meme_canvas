@@ -10,6 +10,7 @@ import { IShape } from "@/types/shape";
 import Cookies from "js-cookie";
 import Image from "next/image";
 import React from "react";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
 const url = process.env.NEXT_PUBLIC_API_URL as string;
@@ -50,27 +51,34 @@ const UploadImageContent = () => {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file);
 
-    const { data } = await uploadImage(formData);
+    const toastId = toast.loading("Pleas wait uploading your image");
 
-    const newShape: IShape = {
-      x: 200,
-      y: 200,
-      width: 100,
-      height: 100,
-      color: "",
-      radius: 0,
-      zIndex: shapes.length,
-      id: uuidv4(),
-      type: "image",
-      rotation: 0,
-      imageUrl: data?.data || "",
-    };
-    dispatch(addShape(newShape));
+    try {
+      const { data } = await uploadImage(formData);
+
+      const newShape: IShape = {
+        x: 200,
+        y: 200,
+        width: 100,
+        height: 100,
+        color: "",
+        radius: 0,
+        zIndex: shapes.length,
+        id: uuidv4(),
+        type: "image",
+        rotation: 0,
+        imageUrl: data?.data || "",
+      };
+      dispatch(addShape(newShape));
+    } catch (error) {
+      toast.error("something went wrong while uploading this image");
+    } finally {
+      toast.dismiss(toastId);
+    }
   };
   return (
-    <div className="flex flex-col items-center justify-start w-full h-full bg-primary  px-[10px] gap-[20px]">
+    <div className="flex flex-col items-center justify-start w-full h-full px-[10px] gap-[20px]">
       <div className="flex flex-col items-center justify-center gap-4 text-center w-full">
         <Input
           type="file"

@@ -60,6 +60,7 @@ export const {
   useGetProjectQuery,
   useUpdateProjectShapeMutation,
   useUploadImageMutation,
+  useCreateProjectMutation,
   useGetImagesQuery,
   useGetProjectsQuery,
 } = projectApi;

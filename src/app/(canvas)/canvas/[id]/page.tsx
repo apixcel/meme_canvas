@@ -64,6 +64,26 @@ const ShapeEditor: React.FC = () => {
   useEffect(() => {
     if (data && data.data) {
       dispatch(setShapes(data.data.shapes));
+
+      const canvasContainer = document.getElementById("canvas-container");
+      const canvas = document.getElementById("canvas");
+      if (!canvasContainer || !canvas) return;
+
+      const width = data.data.canvas.width;
+      const height = data.data.canvas.width;
+
+      const canvasConatinerWidth = canvasContainer.offsetWidth;
+      const canvasConatinerHeight = canvasContainer.offsetHeight;
+      const scaleWidth = canvasConatinerWidth / width;
+      const scaleHeight = canvasConatinerHeight / height;
+
+      // Choose the minimum scale to fit both dimensions
+      const scale = Math.min(scaleWidth, scaleHeight);
+
+      canvas.style.transform = `scale(${scale})`;
+      canvas.style.transformOrigin = "top left";
+
+     
     }
   }, [data, dispatch]);
 
@@ -218,78 +238,84 @@ const ShapeEditor: React.FC = () => {
           </div>
         </div>
         <div
-          className="max-w-full h-full mx-auto border-[1px] border-borderColor relative overflow-hidden bg-white"
-          id="canvas"
-          style={{
-            // width: data?.data?.canvas.width,
-            aspectRatio: `${data?.data?.canvas.width || 1} /
-              ${data?.data?.canvas.height || 1}`,
-          }}
+          className="w-full h-full center overflow-hidden relative"
+          id="canvas-container"
         >
-          {shapes.map((shape) => (
-            <div
-              key={shape.id}
-              style={{
-                zIndex: shape.zIndex,
-                position: "absolute",
-                left: shape.x,
-                top: shape.y,
-                transform: `rotate(${shape.rotation}deg)`,
-                display: shape.type === "text" ? "inline-block" : "block",
+          <div
+            className="border-[1px] border-borderColor  overflow-hidden bg-white absolute top-0 left-0"
+            id="canvas"
+            style={{
+              width: data?.data?.canvas.width || "100%",
+              height: data?.data?.canvas.height || "100%",
+              // aspectRatio: `${data?.data?.canvas.width || 1} /
+              // ${data?.data?.canvas.height || 1}`,
+            }}
+          >
+            {shapes.map((shape) => (
+              <div
+                key={shape.id}
+                style={{
+                  zIndex: shape.zIndex,
+                  position: "absolute",
+                  left: shape.x,
+                  top: shape.y,
+                  transform: `rotate(${shape.rotation}deg)`,
+                  display: shape.type === "text" ? "inline-block" : "block",
 
-                userSelect: "none",
-              }}
-              onMouseDown={(e) => handleMouseDown(e, shape)}
-              className={`${
-                selectedShape?.id === shape.id
-                  ? "border-[#4c4cff]"
-                  : "border-transparent"
-              } border-[2px] p-[10px]`}
-            >
-              {shape.type === "text" && <TextCanvas shape={shape} />}
-              {shape.type === "image" && shape.imageUrl && (
-                <ImageCanvas shape={shape} />
-              )}
-              {shape.type === "rectangle" && <RectCanvas shape={shape} />}
-              {shape.type === "circle" && <CircleCanvas shape={shape} />}
-              {/* Resize handle */}
-              {selectedShape?.id === shape.id ? (
-                <>
-                  <div
-                    onMouseDown={(e) => handleMouseDown(e, shape, true)}
-                    style={{
-                      position: "absolute",
-                      width: `${RESIZE_HANDLE_SIZE}px`,
-                      height: `${RESIZE_HANDLE_SIZE}px`,
-                      bottom: `-${RESIZE_HANDLE_SIZE / 2}px`,
-                      right: `-${RESIZE_HANDLE_SIZE / 2}px`,
-                      backgroundColor: "white",
-                      border: "1px solid black",
-                      cursor: "nwse-resize",
-                      borderRadius: "50%",
-                    }}
-                  ></div>
+                  userSelect: "none",
+                }}
+                onMouseDown={(e) => handleMouseDown(e, shape)}
+                className={`${
+                  selectedShape?.id === shape.id
+                    ? "border-[#4c4cff]"
+                    : "border-transparent"
+                } border-[2px] p-[10px]`}
+              >
+                {shape.type === "text" && <TextCanvas shape={shape} />}
+                {shape.type === "image" && shape.imageUrl && (
+                  <ImageCanvas shape={shape} />
+                )}
+                {shape.type === "rectangle" && <RectCanvas shape={shape} />}
+                {shape.type === "circle" && <CircleCanvas shape={shape} />}
+                {/* Resize handle */}
+                {selectedShape?.id === shape.id ? (
+                  <>
+                    <div
+                      onMouseDown={(e) => handleMouseDown(e, shape, true)}
+                      style={{
+                        position: "absolute",
+                        width: `${RESIZE_HANDLE_SIZE}px`,
+                        height: `${RESIZE_HANDLE_SIZE}px`,
+                        bottom: `-${RESIZE_HANDLE_SIZE / 2}px`,
+                        right: `-${RESIZE_HANDLE_SIZE / 2}px`,
+                        backgroundColor: "white",
+                        border: "1px solid black",
+                        cursor: "nwse-resize",
+                        borderRadius: "50%",
+                      }}
+                    ></div>
 
-                  <button
-                    className="absolute top-[-40px] shadow-md left-0 w-[30px] h-[30px] bg-white rounded-full center"
-                    onClick={removeItem}
-                  >
-                    <Trash className="w-[15px]" />
-                  </button>
-                  {shape.type === "text" ? (
-                    <TextValueChangeModal
-                      value={shape.text || ""}
-                      onSubmit={editText}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </>
-              ) : (
-                ""
-              )}
-            </div>
-          ))}
+                    <button
+                      className="absolute top-[-40px] shadow-md left-0 w-[30px] h-[30px] bg-white rounded-full center"
+                      onClick={removeItem}
+                    >
+                      <Trash className="w-[15px]" />
+                    </button>
+                    {shape.type === "text" ? (
+                      <TextValueChangeModal
+                        value={shape.text || ""}
+                        onSubmit={editText}
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </>
+                ) : (
+                  ""
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

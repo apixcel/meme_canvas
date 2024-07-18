@@ -13,7 +13,7 @@
 
 .gridResponsive {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(285px, 330px));
+  grid-template-columns: repeat(auto-fill, minmax(255px, 340px));
 }
 
 .PhoneInputInput {

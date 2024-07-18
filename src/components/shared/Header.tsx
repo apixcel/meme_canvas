@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AccountPanel } from "../client/AccountPanel";
 import { LeftSidebar } from "../client/LeftSidebar";
+import { Button } from "../ui/button";
 
 const Header = () => {
   const location = usePathname();
@@ -33,7 +34,10 @@ const Header = () => {
           ))}
         </nav>
 
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center justify-start ">
+          <Button className="bg-primaryMat text-white rounded-[8px] hover:bg-primaryMat/100">
+            Create Project
+          </Button>
           {user ? (
             <AccountPanel />
           ) : (

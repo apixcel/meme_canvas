@@ -1,5 +1,6 @@
 import { api } from "@/redux/api/appSlice";
-import { IProject, IShape } from "@/types/shape";
+import { IProject, IProjects } from "@/types/project";
+import { IShape } from "@/types/shape";
 
 const projectApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -16,6 +17,16 @@ const projectApi = api.injectEndpoints({
       query: (id) => {
         return {
           url: `/project/get/${id}`,
+          method: "GET",
+        };
+      },
+      keepUnusedDataFor: 0,
+      providesTags: ["project"],
+    }),
+    getProjects: builder.query<{ data: IProjects[] | [] }, undefined>({
+      query: () => {
+        return {
+          url: `/project/all`,
           method: "GET",
         };
       },
@@ -50,4 +61,5 @@ export const {
   useUpdateProjectShapeMutation,
   useUploadImageMutation,
   useGetImagesQuery,
+  useGetProjectsQuery,
 } = projectApi;

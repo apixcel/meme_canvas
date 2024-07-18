@@ -1,9 +1,34 @@
+import { addShape } from "@/redux/features/project/project.slice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { IShape } from "@/types/shape";
 import React from "react";
-interface IProps {
-  addText: () => void;
-}
+import { v4 } from "uuid";
 
-const AddTextContent: React.FC<IProps> = ({ addText }) => {
+const AddTextContent: React.FC = () => {
+  const { shapes } = useAppSelector((state) => state.shapes);
+  const dispatch = useAppDispatch();
+
+  const addText = () => {
+    const newShape: IShape = {
+      x: 250,
+      y: 250,
+      radius: 0,
+      width: 0,
+      height: 0,
+      color: "#000000",
+      id: v4(),
+      type: "text",
+      rotation: 0,
+      text: "Sample Text",
+      zIndex: shapes.length,
+      textStyle: {
+        fontSize: 20,
+        textAlign: "start",
+      },
+    };
+    dispatch(addShape(newShape));
+  };
+
   return (
     <div className=" flex items-start justify-start flex-col gap-[25px] px-[15px]">
       <h3 className="text-[#bebebe] text-[30px] font-[700]">Add Text</h3>

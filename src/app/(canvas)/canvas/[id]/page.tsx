@@ -9,28 +9,60 @@ import TextValueChangeModal from "@/components/Canvas/TextValueChangeModal";
 import DownloadButton from "@/components/Canvas/topBar/DownloadButton";
 import SaveChanges from "@/components/Canvas/topBar/SaveChanges";
 import TopBar from "@/components/Canvas/topBar/TopBar";
+import {
+  useGetProjectQuery,
+  useUpdateProjectShapeMutation,
+} from "@/redux/features/project/project.api";
+import {
+  setSelectedShape,
+  setShapes,
+} from "@/redux/features/project/project.slice";
+import { useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
+import debounce from "lodash/debounce";
 import { Trash } from "lucide-react";
-import React, { MouseEvent, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import React, { MouseEvent, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 const ShapeEditor: React.FC = () => {
+  const { id } = useParams();
+  const { data } = useGetProjectQuery(id as string);
+  const [update] = useUpdateProjectShapeMutation();
+
+  const { shapes, selectedShape } = useAppSelector((state) => state.shapes);
+  const dispatch = useDispatch();
+
   const [showSidebar, setShowSidebar] = useState(false);
 
-  const [shapes, setShapes] = useState<IShape[]>([]);
   const [dragging, setDragging] = useState<IShape | null>(null);
   const [resizing, setResizing] = useState<IShape | null>(null);
   const [offset, setOffset] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   });
-  const [selectedShape, setSelectedShape] = useState<IShape | null>(null);
+  // => debouncing
+  const debouncedUpdate = useMemo(
+    () =>
+      debounce((id, shapes) => {
+        update({ id, shapes });
+      }, 1000),
+    [update]
+  );
 
   useEffect(() => {
-    const items = localStorage.getItem("canvas");
-    const savedChanges = items ? JSON.parse(items) : [];
+    debouncedUpdate(id, shapes);
 
-    setShapes(savedChanges);
-  }, []);
+    return () => {
+      debouncedUpdate.cancel();
+    };
+  }, [shapes, debouncedUpdate, id]);
+
+  useEffect(() => {
+    if (data && data.data) {
+      dispatch(setShapes(data.data.shapes));
+    }
+  }, [data, dispatch]);
 
   const RESIZE_HANDLE_SIZE = 15;
 
@@ -50,12 +82,12 @@ const ShapeEditor: React.FC = () => {
         y: e.clientY - shape.y,
       });
     }
-    setSelectedShape(shape);
+    dispatch(setSelectedShape(shape));
   };
 
   const removeItem = () => {
     const newShapes = shapes.filter(({ id }) => id !== selectedShape?.id);
-    setShapes(newShapes);
+    dispatch(setShapes(newShapes));
   };
   const editText = (value: string) => {
     const newShapes = shapes.map((shape) => {
@@ -64,7 +96,7 @@ const ShapeEditor: React.FC = () => {
       }
       return shape;
     });
-    setShapes(newShapes);
+    dispatch(setShapes(newShapes));
   };
 
   // to delete the element
@@ -73,7 +105,7 @@ const ShapeEditor: React.FC = () => {
       const keycode = e.keyCode;
       if (keycode === 46 && selectedShape) {
         const newShapes = shapes.filter(({ id }) => id !== selectedShape.id);
-        setShapes(newShapes);
+        dispatch(setShapes(newShapes));
       }
 
       if (e.ctrlKey && e.key === "c" && selectedShape) {
@@ -98,8 +130,8 @@ const ShapeEditor: React.FC = () => {
                 id: uuid(),
               };
 
-              setShapes([...shapes, newCloneShape]);
-              setSelectedShape(newCloneShape);
+              dispatch(setShapes([...shapes, newCloneShape]));
+              dispatch(setSelectedShape(newCloneShape));
             }
           })
           .catch((err) => {
@@ -112,7 +144,7 @@ const ShapeEditor: React.FC = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedShape, shapes]);
+  }, [selectedShape, shapes, dispatch]);
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (dragging) {
@@ -126,7 +158,7 @@ const ShapeEditor: React.FC = () => {
         }
         return shape;
       });
-      setShapes(newShapes);
+      dispatch(setShapes(newShapes));
     } else if (resizing) {
       const newShapes = shapes.map((shape) => {
         if (shape.id === resizing.id) {
@@ -152,7 +184,7 @@ const ShapeEditor: React.FC = () => {
         }
         return shape;
       });
-      setShapes(newShapes);
+      dispatch(setShapes(newShapes));
     }
   };
 
@@ -168,25 +200,15 @@ const ShapeEditor: React.FC = () => {
       onMouseMove={handleMouseMove}
     >
       <div className="h-full" onClick={() => setSelectedShape(null)}>
-        <CanvasSideBar
-          setShapes={setShapes}
-          shapes={shapes}
-          selectedShape={selectedShape}
-          setSelectedShape={setSelectedShape}
-        />
+        <CanvasSideBar />
       </div>
 
       <div className="flex flex-col justify-start items-start gap-[10px] w-full h-full">
         <div className="w-full h-[80px] bg-white flex items-center justify-between px-[30px]">
-          <TopBar
-            setSelectedShape={setSelectedShape}
-            selectedShape={selectedShape}
-            setShapes={setShapes}
-            shapes={shapes}
-          />
+          <TopBar />
 
           <div className="center gap-[15px]">
-            <DownloadButton setSelectedShape={setSelectedShape} />
+            <DownloadButton />
             <SaveChanges shapes={shapes} />
           </div>
         </div>

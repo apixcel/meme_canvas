@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { IShape } from "@/types/shape";
+import { setSelectedShape } from "@/redux/features/project/project.slice";
+import { useAppDispatch } from "@/redux/hook";
 import { toPng } from "html-to-image";
-import React, { SetStateAction } from "react";
+import React from "react";
 import { MdDownload } from "react-icons/md";
-interface IProps {
-  setSelectedShape: React.Dispatch<SetStateAction<IShape | null>>;
-}
-const DownloadButton: React.FC<IProps> = ({ setSelectedShape }) => {
+
+const DownloadButton: React.FC = () => {
+  const dispatch = useAppDispatch();
+
   const downloadImage = async () => {
-    setSelectedShape(null);
+    dispatch(setSelectedShape(null));
     const node = document.getElementById("canvas");
 
     if (!node) {

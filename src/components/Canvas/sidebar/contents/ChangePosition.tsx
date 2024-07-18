@@ -1,3 +1,8 @@
+import {
+  setSelectedShape,
+  setShapes,
+} from "@/redux/features/project/project.slice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import {
   closestCenter,
@@ -25,17 +30,11 @@ interface IProps {
   selectedShape: IShape | null;
 }
 
-interface IShapeProps {
+const Shape: React.FC<{
   shape: IShape;
-  setSelectedShape: React.Dispatch<SetStateAction<IShape | null>>;
-  selectedShape: IShape | null;
-}
-
-const Shape: React.FC<IShapeProps> = ({
-  shape,
-  selectedShape,
-  setSelectedShape,
-}) => {
+}> = ({ shape }) => {
+  const { selectedShape } = useAppSelector((state) => state.shapes);
+  const dispatch = useAppDispatch();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: shape.id });
 
@@ -44,8 +43,12 @@ const Shape: React.FC<IShapeProps> = ({
     transition: transition,
   };
 
+  const handleSetSelectedShape = () => {
+    dispatch(setSelectedShape(shape));
+  };
+
   return (
-    <div className="w-full" onMouseDown={() => setSelectedShape(shape)}>
+    <div className="w-full" onMouseDown={handleSetSelectedShape}>
       <div
         className={`w-[90%] py-[8px] px-[10px] border-[1px]  flex items-center justify-between mx-auto bg-[#fffffff1] rounded-[8px] ${
           selectedShape?.id === shape.id
@@ -107,13 +110,11 @@ const Shape: React.FC<IShapeProps> = ({
   );
 };
 
-const ChangePosition: React.FC<IProps> = ({
-  shapes,
-  setShapes,
-  selectedShape,
-  setSelectedShape,
-}) => {
+const ChangePosition = () => {
   const sensiors = useSensors(useSensor(TouchSensor), useSensor(PointerSensor));
+
+  const { shapes, selectedShape } = useAppSelector((state) => state.shapes);
+  const dispatch = useAppDispatch();
 
   const getShapePosition = (id: any) => {
     return shapes.findIndex((shape) => shape.id === id);
@@ -130,7 +131,7 @@ const ChangePosition: React.FC<IProps> = ({
     const newArr = arrayMove(shapes, shapePosition, newPosition);
     const newArrayIndx = newArr.map((shape, i) => ({ ...shape, zIndex: i }));
 
-    setShapes(newArrayIndx as IShape[]);
+    dispatch(setShapes(newArrayIndx));
   };
 
   return (
@@ -146,12 +147,7 @@ const ChangePosition: React.FC<IProps> = ({
             strategy={verticalListSortingStrategy}
           >
             {[...shapes].reverse().map((shape) => (
-              <Shape
-                key={shape.id}
-                shape={shape}
-                selectedShape={selectedShape}
-                setSelectedShape={setSelectedShape}
-              />
+              <Shape key={shape.id} shape={shape} />
             ))}
           </SortableContext>
         </div>

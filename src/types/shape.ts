@@ -24,3 +24,12 @@ export interface IShape {
   zIndex: number;
   textStyle?: ITextStyle;
 }
+
+export interface IProject {
+  projectName: string;
+  canvas: {
+    width: number;
+    height: number;
+  };
+  shapes: IShape[];
+}

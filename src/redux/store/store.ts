@@ -10,6 +10,7 @@ import {
 } from "redux-persist";
 import { api } from "../api/appSlice";
 import authReducer from "../features/auth/auth.slice";
+import shapeReducer from "../features/project/project.slice";
 
 // Persist configuration
 
@@ -17,6 +18,7 @@ import authReducer from "../features/auth/auth.slice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    shapes: shapeReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>

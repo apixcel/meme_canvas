@@ -1,33 +1,13 @@
-import React, { SetStateAction, useState } from "react";
+import { useState } from "react";
 
-import { IShape } from "@/types/shape";
-import { CanvasFuntions } from "../canvasFunctions";
 import SidebarLinks from "./SidebarLinks";
 import AddTextContent from "./contents/AddTextContent";
 import ChangePosition from "./contents/ChangePosition";
 import ShapeContent from "./contents/ShapeContent";
 import UploadImageContent from "./contents/UploadImageContent";
 
-interface IProps {
-  shapes: IShape[];
-  setShapes: React.Dispatch<SetStateAction<IShape[]>>;
-  setSelectedShape: React.Dispatch<SetStateAction<IShape | null>>;
-  selectedShape: IShape | null;
-}
-
-const CanvasSideBar: React.FC<IProps> = ({
-  shapes,
-  setShapes,
-  selectedShape,
-  setSelectedShape,
-}) => {
+const CanvasSideBar = () => {
   const [tab, setTab] = useState("shape");
-
-  const { addCircle, addRectangle, addText, handleImageUpload } =
-    CanvasFuntions({
-      shapes,
-      setShapes,
-    });
 
   return (
     // <div className="flex flex-col items-center gap-[10px] mb-[20px] select-none">
@@ -69,21 +49,10 @@ const CanvasSideBar: React.FC<IProps> = ({
       <SidebarLinks setTab={setTab} tab={tab} />
 
       <div className="w-[calc(100%-80px)] h-full py-[10px] overflow-auto smoothBar">
-        {tab === "shape" && (
-          <ShapeContent addCircle={addCircle} addRectangle={addRectangle} />
-        )}
-        {tab === "text" && <AddTextContent addText={addText} />}
-        {tab === "image" && (
-          <UploadImageContent handleImageUpload={handleImageUpload} />
-        )}
-        {tab === "position" && (
-          <ChangePosition
-            setShapes={setShapes}
-            shapes={shapes}
-            selectedShape={selectedShape}
-            setSelectedShape={setSelectedShape}
-          />
-        )}
+        {tab === "shape" && <ShapeContent />}
+        {tab === "text" && <AddTextContent />}
+        {tab === "image" && <UploadImageContent />}
+        {tab === "position" && <ChangePosition />}
       </div>
     </div>
   );

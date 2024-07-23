@@ -10,10 +10,10 @@ const CanvasSideBar = () => {
   const [tab, setTab] = useState("shape");
 
   return (
-      <div className="h-full w-full bg-[#252627] flex items-start justify-start">
+    <div className="h-full w-full bg-[#252627] flex items-start justify-start">
       <SidebarLinks setTab={setTab} tab={tab} />
 
-      <div className="w-[calc(100%-80px)] h-full py-[10px] overflow-auto smoothBar">
+      <div className="w-[calc(100%-80px)] h-full py-[10px] smoothBar overflow-y-auto overflow-x-hidden">
         {tab === "shape" && <ShapeContent />}
         {tab === "text" && <AddTextContent />}
         {tab === "image" && <UploadImageContent />}

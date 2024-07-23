@@ -13,6 +13,13 @@ const projectApi = api.injectEndpoints({
       }),
       invalidatesTags: ["project"],
     }),
+    deleteProject: builder.mutation({
+      query: (id: string) => ({
+        url: `/project/delete/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["project"],
+    }),
     getProject: builder.query<{ data: IProject | null }, string>({
       query: (id) => {
         return {
@@ -35,9 +42,17 @@ const projectApi = api.injectEndpoints({
     updateProjectShape: builder.mutation({
       query: ({ id, shapes }: { id: string; shapes: IShape[] | [] }) => ({
         url: `/project/update/${id}`,
-        method: "PATCH",
+        method: "PUT",
         body: shapes,
       }),
+    }),
+    renameProject: builder.mutation({
+      query: ({ id, projectName }: { id: string; projectName: string }) => ({
+        url: `/project/rename/${id}`,
+        method: "PUT",
+        body: { projectName },
+      }),
+      invalidatesTags: ["project"],
     }),
     uploadImage: builder.mutation<{ data: string }, FormData>({
       query: (file) => ({
@@ -63,4 +78,6 @@ export const {
   useCreateProjectMutation,
   useGetImagesQuery,
   useGetProjectsQuery,
+  useDeleteProjectMutation,
+  useRenameProjectMutation,
 } = projectApi;

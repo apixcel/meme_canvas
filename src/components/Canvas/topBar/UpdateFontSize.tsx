@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import {
   setSelectedShape,
   updateShape,
-} from "@/redux/features/project/project.slice";
+} from "@/redux/features/project/shapes.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import { MinusIcon, PlusIcon } from "lucide-react";
@@ -32,6 +32,15 @@ const UpdateFontSize: React.FC<IProps> = ({ updateFontSize }) => {
     dispatch(updateShape(shape));
   };
 
+  const handleChangeFontSize = (e: string) => {
+    const size = Number(e);
+    const shape = updateFontSize(size);
+    if (!shape) return;
+    dispatch(setSelectedShape(shape));
+
+    dispatch(updateShape(shape));
+  };
+
   return (
     <div className="center gap-[2px]">
       <Button variant="outline" onClick={decCreaseFontSize}>
@@ -39,10 +48,10 @@ const UpdateFontSize: React.FC<IProps> = ({ updateFontSize }) => {
       </Button>
       <Input
         type="number"
-        value={selectedShape?.textStyle?.fontSize || 0}
-        // onChange={(e) => setValue(parseInt(e.target.value) || 0)}
-        className="w-20 text-center"
-        readOnly
+        value={selectedShape?.textStyle?.fontSize?.toFixed(2) || 0}
+        onChange={(e) => handleChangeFontSize(e.target.value)}
+        className="w-20 text-center outline-none"
+        // readOnly
         min={0}
       />
       <Button variant="outline" onClick={increaseFontSize}>

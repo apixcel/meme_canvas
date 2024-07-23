@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/redux/hook";
 import React from "react";
 import { LuPencil } from "react-icons/lu";
 import { toast } from "sonner";
@@ -18,6 +19,8 @@ interface IProps {
 }
 
 const TextValueChangeModal: React.FC<IProps> = ({ onSubmit, value }) => {
+  const { zoom } = useAppSelector((state) => state.project);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -35,7 +38,10 @@ const TextValueChangeModal: React.FC<IProps> = ({ onSubmit, value }) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <button className="absolute top-[-40px] shadow-md left-[50px] w-[30px] h-[30px] bg-white rounded-full center">
+          <button
+            style={{ transform: `scale(${1 / (zoom / 100)})` }}
+            className="shadow-md w-[30px] h-[30px] bg-white rounded-full center"
+          >
             <LuPencil className="w-[15px]" />
           </button>
         </DialogTrigger>

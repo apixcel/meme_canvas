@@ -6,14 +6,15 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import Cookies from "js-cookie";
-import { setUser } from "../features/auth/auth.slice";
+import { setState, setToken, setUser } from "../features/auth/auth.slice";
+import { RootState } from "../store/store";
 
 const url = process.env.NEXT_PUBLIC_API_URL;
 
 const baseQuery = fetchBaseQuery({
   baseUrl: url,
   prepareHeaders: (headers, { getState }) => {
-    const token = Cookies.get("accessToken");
+    const token = (getState() as RootState).auth.token;
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
@@ -41,17 +42,23 @@ const baseQueryWithRefreshToken: BaseQueryFn<
         },
       });
 
+      if (!res.ok) {
+        api.dispatch(setState({ isLoading: false, token: null, user: null }));
+        result = await baseQuery(args, api, extraOptions);
+        return result;
+      }
+
       const data = await res.json();
       const token = data?.data?.accessToken || "";
       const user = data?.data;
 
       if (token) {
         api.dispatch(setUser({ user }));
-        Cookies.set("accessToken", token);
+        api.dispatch(setToken(token));
         result = await baseQuery(args, api, extraOptions);
       }
     } catch (error) {
-      api.dispatch(setUser({ user: null }));
+      api.dispatch(setState({ isLoading: false, token: null, user: null }));
     }
   }
   return result;

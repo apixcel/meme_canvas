@@ -12,14 +12,14 @@ import CreateProject from "./CreatePorject";
 const Header = () => {
   const location = usePathname();
 
-  const { user, isLoading } = useAppSelector((state) => state.auth);
+  const { user, isLoading, token } = useAppSelector((state) => state.auth);
 
   return (
     <header className="py-5 lg:py-7 border-b sticky top-0 z-50 bg-white ">
-      <div className="layout_container  flex justify-between gap-4 items-center">
+      <div className="layout_container flex justify-between gap-4 items-center">
         <div className="flex items-center gap-2">
           <LeftSidebar />
-          <span className="text-lg font-bold">Tienda</span>
+          <span className="text-lg font-bold">Tienda </span>
         </div>
         <nav className="hidden lg:flex gap-5 items-center">
           {navLinks.map((nav) => (
@@ -39,6 +39,7 @@ const Header = () => {
           <CreateProject>
             <Button id="create">Create Project</Button>
           </CreateProject>
+
           {user ? (
             <AccountPanel />
           ) : (

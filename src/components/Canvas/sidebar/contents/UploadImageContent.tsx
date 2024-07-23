@@ -4,7 +4,7 @@ import {
   useGetImagesQuery,
   useUploadImageMutation,
 } from "@/redux/features/project/project.api";
-import { addShape } from "@/redux/features/project/project.slice";
+import { addShape } from "@/redux/features/project/shapes.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import Cookies from "js-cookie";

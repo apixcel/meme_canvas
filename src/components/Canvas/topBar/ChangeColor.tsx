@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { updateShape } from "@/redux/features/project/project.slice";
+import { updateShape } from "@/redux/features/project/shapes.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import React from "react";

@@ -1,5 +1,5 @@
 import { api } from "@/redux/api/appSlice";
-import { TCustomer } from "@/types/customer";
+import { TUser } from "@/types/user";
 
 const userApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -20,8 +20,10 @@ const userApi = api.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
-    getAuthor: builder.query<{ data: TCustomer }, string>({
+    getAuthor: builder.query<{ data: TUser }, string>({
       query: (token) => {
+   
+
         return {
           url: `/auth/auth-state`,
           method: "GET",

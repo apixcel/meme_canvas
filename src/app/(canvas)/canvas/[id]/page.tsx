@@ -1,35 +1,41 @@
 "use client";
 
+import BottomBar from "@/components/Canvas/bottomBar/BottomBar";
 import CircleCanvas from "@/components/Canvas/CircleCanvas";
 import ImageCanvas from "@/components/Canvas/Image";
 import RectCanvas from "@/components/Canvas/RectCanvas";
 import CanvasSideBar from "@/components/Canvas/sidebar/CanvasSideBar";
 import TextCanvas from "@/components/Canvas/TextCanvas";
 import TextValueChangeModal from "@/components/Canvas/TextValueChangeModal";
-import DownloadButton from "@/components/Canvas/topBar/DownloadButton";
-import SaveChanges from "@/components/Canvas/topBar/SaveChanges";
 import TopBar from "@/components/Canvas/topBar/TopBar";
+import Loader from "@/components/shared/Loader";
 import {
   useGetProjectQuery,
   useUpdateProjectShapeMutation,
 } from "@/redux/features/project/project.api";
+import { setProject, setScale } from "@/redux/features/project/project.slice";
 import {
+  addShape,
+  removeShape,
   setSelectedShape,
   setShapes,
-} from "@/redux/features/project/project.slice";
+} from "@/redux/features/project/shapes.slice";
 import { useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import debounce from "lodash/debounce";
 import { Trash } from "lucide-react";
 import { useParams } from "next/navigation";
-import React, { MouseEvent, useEffect, useMemo, useState } from "react";
+import React, { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 const ShapeEditor: React.FC = () => {
   const { id } = useParams();
+
   const { data, isFetching } = useGetProjectQuery(id as string);
   const [update] = useUpdateProjectShapeMutation();
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
 
+  const { zoom } = useAppSelector((state) => state.project);
   const { shapes, selectedShape } = useAppSelector((state) => state.shapes);
 
   const dispatch = useDispatch();
@@ -70,20 +76,43 @@ const ShapeEditor: React.FC = () => {
       if (!canvasContainer || !canvas) return;
 
       const width = data.data.canvas.width;
-      const height = data.data.canvas.width;
+      const height = data.data.canvas.height;
+      const projectName = data.data.projectName || "";
 
       const canvasConatinerWidth = canvasContainer.offsetWidth;
       const canvasConatinerHeight = canvasContainer.offsetHeight;
+
       const scaleWidth = canvasConatinerWidth / width;
       const scaleHeight = canvasConatinerHeight / height;
 
       // Choose the minimum scale to fit both dimensions
-      const scale = Math.min(scaleWidth, scaleHeight);
+      const scale = Math.min(scaleWidth, scaleHeight) * 100;
 
-      canvas.style.transform = `scale(${scale})`;
-      canvas.style.transformOrigin = "top left";
+      if (scale > 0 && scale < 110) {
+        const projectPayload = {
+          projectName,
+          canvas: {
+            width,
+            height,
+          },
+          isExtended: true,
+          zoom: Number(scale.toFixed(2)),
+        };
 
-     
+        dispatch(setProject(projectPayload));
+      } else {
+        const projectPayload = {
+          projectName,
+          canvas: {
+            width,
+            height,
+          },
+          isExtended: true,
+          zoom: 100,
+        };
+
+        dispatch(setProject(projectPayload));
+      }
     }
   }, [data, dispatch]);
 
@@ -101,17 +130,13 @@ const ShapeEditor: React.FC = () => {
     } else {
       setDragging(shape);
       setOffset({
-        x: e.clientX - shape.x,
-        y: e.clientY - shape.y,
+        x: e.clientX / (zoom / 100) - shape.x,
+        y: e.clientY / (zoom / 100) - shape.y,
       });
     }
     dispatch(setSelectedShape(shape));
   };
 
-  const removeItem = () => {
-    const newShapes = shapes.filter(({ id }) => id !== selectedShape?.id);
-    dispatch(setShapes(newShapes));
-  };
   const editText = (value: string) => {
     const newShapes = shapes.map((shape) => {
       if (shape.id === selectedShape?.id) {
@@ -122,13 +147,12 @@ const ShapeEditor: React.FC = () => {
     dispatch(setShapes(newShapes));
   };
 
-  // to delete the element
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const keycode = e.keyCode;
+      // to delete the element
       if (keycode === 46 && selectedShape) {
-        const newShapes = shapes.filter(({ id }) => id !== selectedShape.id);
-        dispatch(setShapes(newShapes));
+        dispatch(removeShape(selectedShape.id));
       }
 
       if (e.ctrlKey && e.key === "c" && selectedShape) {
@@ -153,7 +177,7 @@ const ShapeEditor: React.FC = () => {
                 id: uuid(),
               };
 
-              dispatch(setShapes([...shapes, newCloneShape]));
+              dispatch(addShape(newCloneShape));
               dispatch(setSelectedShape(newCloneShape));
             }
           })
@@ -162,22 +186,44 @@ const ShapeEditor: React.FC = () => {
           });
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [selectedShape, shapes, dispatch]);
 
+  useEffect(() => {
+    const canvasContainer = canvasContainerRef.current;
+
+    const handleScroll = (e: WheelEvent | any) => {
+      e.preventDefault();
+      const deltaY = e.wheelDelta;
+
+      if (e.ctrlKey) {
+        deltaY > 0 ? dispatch(setScale(10)) : dispatch(setScale(-10));
+      }
+    };
+
+    if (!canvasContainer) return;
+
+    canvasContainer.addEventListener("wheel", handleScroll);
+    return () => {
+      canvasContainer.removeEventListener("wheel", handleScroll);
+    };
+  }, [dispatch, canvasContainerRef.current, zoom]);
+
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (dragging) {
       const newShapes = shapes.map((shape) => {
         if (shape.id === dragging.id) {
-          return {
+          const newShape = {
             ...shape,
-            x: e.clientX - offset.x,
-            y: e.clientY - offset.y,
+            x: e.clientX / (zoom / 100) - offset.x,
+            y: e.clientY / (zoom / 100) - offset.y,
           };
+
+          dispatch(setSelectedShape(newShape));
+          return newShape;
         }
         return shape;
       });
@@ -186,23 +232,31 @@ const ShapeEditor: React.FC = () => {
       const newShapes = shapes.map((shape) => {
         if (shape.id === resizing.id) {
           if (shape.type === "text" && shape.textStyle?.fontSize) {
-            const deltaX = (e.clientX - shape.x) / 2;
-            const deltaY = (e.clientY - shape.y) / 2;
-            const newFontSize = Math.max(deltaX, deltaY);
+            const deltaX = (e.clientX - shape.x) / 2 / (zoom / 100);
+            const deltaY = (e.clientY - shape.y) / 2 / (zoom / 100);
+            const newFontSize = Math.max(deltaX, deltaY) / 8;
 
             const { textStyle = {}, ...rest } = shape;
-            const newTextStyle = { ...textStyle, fontSize: newFontSize };
+            const newTextStyle = {
+              ...textStyle,
+              fontSize: newFontSize,
+            };
 
-            return { ...rest, textStyle: newTextStyle };
+            const newText = { ...rest, textStyle: newTextStyle };
+            dispatch(setSelectedShape(newText));
+            return newText;
           } else {
             const deltaX = e.movementX;
             const deltaY = e.movementY;
 
-            return {
+            const newShape = {
               ...shape,
-              width: shape.width + deltaX,
-              height: shape.height + deltaY,
+              width: shape.width + deltaX / (zoom / 100),
+
+              height: shape.height + deltaY / (zoom / 100),
             };
+            dispatch(setSelectedShape(newShape));
+            return newShape;
           }
         }
         return shape;
@@ -216,33 +270,31 @@ const ShapeEditor: React.FC = () => {
     setResizing(null);
   };
   if (isFetching) {
-    return <></>;
+    return <Loader />;
   }
   return (
-    <div
-      className="w-full h-screen relative flex items-start justify-start py-[20px] bg-slate-100 gap-[20px]"
-      onMouseUp={handleMouseUp}
-      onMouseMove={handleMouseMove}
-    >
-      <div className="h-full w-[550px]" onClick={() => setSelectedShape(null)}>
+    <div className="w-full h-[calc(100%-70px)] relative flex items-start justify-start bg-slate-100 gap-[20px]">
+      <div
+        className="h-full w-[550px]"
+        onClick={() => dispatch(setSelectedShape(null))}
+      >
         <CanvasSideBar />
       </div>
 
       <div className="flex w-[calc(100%-550px)] h-full flex-col justify-start items-start gap-[10px]">
         <div className="w-full h-[80px] bg-white flex items-center justify-between px-[30px]">
           <TopBar />
-
-          <div className="center gap-[15px]">
-            <DownloadButton />
-            <SaveChanges shapes={shapes} />
-          </div>
         </div>
         <div
-          className="w-full h-full center overflow-hidden relative"
+          className="w-full h-full overflow-auto relative"
+          style={{ zoom: `${zoom}%` }}
           id="canvas-container"
+          ref={canvasContainerRef}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
         >
           <div
-            className="border-[1px] border-borderColor  overflow-hidden bg-white absolute top-0 left-0"
+            className=" overflow-hidden bg-white shrink-0 relative mx-auto"
             id="canvas"
             style={{
               width: data?.data?.canvas.width || "100%",
@@ -261,7 +313,7 @@ const ShapeEditor: React.FC = () => {
                   top: shape.y,
                   transform: `rotate(${shape.rotation}deg)`,
                   display: shape.type === "text" ? "inline-block" : "block",
-
+                  borderWidth: `${2 / (zoom / 100)}px`,
                   userSelect: "none",
                 }}
                 onMouseDown={(e) => handleMouseDown(e, shape)}
@@ -269,7 +321,7 @@ const ShapeEditor: React.FC = () => {
                   selectedShape?.id === shape.id
                     ? "border-[#4c4cff]"
                     : "border-transparent"
-                } border-[2px] p-[10px]`}
+                }  p-[5px]`}
               >
                 {shape.type === "text" && <TextCanvas shape={shape} />}
                 {shape.type === "image" && shape.imageUrl && (
@@ -289,26 +341,35 @@ const ShapeEditor: React.FC = () => {
                         bottom: `-${RESIZE_HANDLE_SIZE / 2}px`,
                         right: `-${RESIZE_HANDLE_SIZE / 2}px`,
                         backgroundColor: "white",
+                        transform: `scale(${1 / (zoom / 100)})`,
                         border: "1px solid black",
                         cursor: "nwse-resize",
                         borderRadius: "50%",
                       }}
                     ></div>
 
-                    <button
-                      className="absolute top-[-40px] shadow-md left-0 w-[30px] h-[30px] bg-white rounded-full center"
-                      onClick={removeItem}
+                    <div
+                      className="center absolute top-[-40px] left-0"
+                      style={{ gap: `${15 / (zoom / 100)}px` }}
                     >
-                      <Trash className="w-[15px]" />
-                    </button>
-                    {shape.type === "text" ? (
-                      <TextValueChangeModal
-                        value={shape.text || ""}
-                        onSubmit={editText}
-                      />
-                    ) : (
-                      ""
-                    )}
+                      <button
+                        style={{ transform: `scale(${1 / (zoom / 100)})` }}
+                        className="shadow-md w-[30px] h-[30px] bg-white rounded-full center"
+                        onClick={() =>
+                          dispatch(removeShape(selectedShape.id || ""))
+                        }
+                      >
+                        <Trash className="w-[15px]" />
+                      </button>
+                      {shape.type === "text" ? (
+                        <TextValueChangeModal
+                          value={shape.text || ""}
+                          onSubmit={editText}
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </>
                 ) : (
                   ""
@@ -317,6 +378,7 @@ const ShapeEditor: React.FC = () => {
             ))}
           </div>
         </div>
+        <BottomBar />
       </div>
     </div>
   );

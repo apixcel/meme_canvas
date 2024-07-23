@@ -111,3 +111,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+.canvasHeadGradient {
+  background: #a1ffd4;
+  background: linear-gradient(169deg, #3df1a0 5%, #3df1ca 50%, #aaff68 100%);
+}
+
+.avatarGradient {
+  background: linear-gradient(169deg, #12ff94 5%, #fecaff 50%, #f0bff1 100%);
+}

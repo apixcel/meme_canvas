@@ -1,6 +1,11 @@
+"use client";
 import Image from "next/image";
-
 const HeroSection = () => {
+  const handleCreateProject = () => {
+    const createButton = document.getElementById("create") as HTMLElement;
+    createButton.click();
+  };
+
   return (
     <section className="w-full h-[500px]">
       <div className="h-full w-full relative pt-[20px] px-[20px] rounded-[15px] overflow-hidden bg-[#ff3377] flex flex-col justify-center">
@@ -14,7 +19,10 @@ const HeroSection = () => {
               businesses and captivate audiences.
             </p>
             <div className="mt-6">
-              <button className="inline-flex h-10 items-center justify-center rounded-md bg-secondary px-8 text-sm text-primaryTxt bg-white hover:bg-[#d8d8d8]">
+              <button
+                className="inline-flex h-10 items-center justify-center rounded-md bg-secondary px-8 text-sm text-primaryTxt bg-white hover:bg-[#d8d8d8]"
+                onClick={handleCreateProject}
+              >
                 Get Started
               </button>
             </div>

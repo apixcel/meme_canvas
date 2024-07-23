@@ -1,7 +1,7 @@
 "use client";
 
 import { useLoginUserMutation } from "@/redux/features/auth/auth.api";
-import { setUser } from "@/redux/features/auth/auth.slice";
+import { setToken, setUser } from "@/redux/features/auth/auth.slice";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import Cookies from "js-cookie";
 import { LogIn } from "lucide-react";
@@ -29,6 +29,8 @@ const Login = () => {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const redirect = Cookies.get("redirect");
+
   const handleLogin = async (values: TFormValues) => {
     const toastId = toast.loading("Please wait...");
     try {
@@ -45,15 +47,14 @@ const Login = () => {
       };
       dispatch(setUser(authData));
       Cookies.set("refreshToken", data.refreshToken);
-      Cookies.set("accessToken", data.accessToken);
+      dispatch(setToken(data.accessToken || ""));
 
       toast.success("Successfully logged in", {
         description: "Welcome back!",
       });
 
-      const redirect = Cookies.get("redirect");
-      router.push(redirect || "/profile");
-      Cookies.remove("redirect");
+      redirect ? Cookies.remove("redirect") : "";
+      router.replace(redirect || "/profile");
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");

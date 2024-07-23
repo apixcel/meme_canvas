@@ -1,62 +1,65 @@
 // shapesSlice.ts
-import { IShape } from "@/types/shape";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Define the initial state
-interface ShapesState {
-  shapes: IShape[];
-  selectedShape: IShape | null;
+// --> canvas max zooming values--->
+export const zoovVal = {
+  maxZoomVal: 190,
+  minZoomVal: 10,
+} as const;
+
+interface ProjectState {
+  projectName: string;
+  canvas: {
+    width: number;
+    height: number;
+  };
+  isExtended: boolean; // is the canvas in larger than the screen
+  zoom: number; // zoom ammount maxvalue 100%
 }
 
-const initialState: ShapesState = {
-  shapes: [],
-  selectedShape: null,
+const initialState: ProjectState = {
+  projectName: "",
+  canvas: {
+    width: 0,
+    height: 0,
+  },
+  isExtended: false,
+  zoom: 100,
 };
 
 const shapesSlice = createSlice({
   name: "shapes",
   initialState,
   reducers: {
-    setShapes(state, action: PayloadAction<IShape[]>) {
-      state.shapes = action.payload;
+    setProject(state, action: PayloadAction<ProjectState>) {
+      return action.payload;
     },
-    addShape(state, action: PayloadAction<IShape>) {
-      state.shapes.unshift(action.payload);
+    setProjectName(state, action: PayloadAction<string>) {
+      state.projectName = action.payload;
     },
-    updateShape(state, action: PayloadAction<IShape >) {
-        
+    setScale(state, action: PayloadAction<number>) {
+      const willAmount = state.zoom + action.payload;
+      const { maxZoomVal, minZoomVal } = zoovVal;
 
-
-      const index = state.shapes.findIndex(
-        (shape) => shape.id === action.payload.id
-      );
-      if (index !== -1) {
-        state.shapes[index] = action.payload;
+      if (willAmount > maxZoomVal) {
+        const delta = maxZoomVal - state.zoom;
+        state.zoom += delta;
+        return;
+      }
+      if (willAmount < minZoomVal) {
+        state.zoom = minZoomVal;
+        return;
+      } else {
+        state.zoom += action.payload;
       }
     },
-    removeShape(state, action: PayloadAction<string>) {
-      state.shapes = state.shapes.filter(
-        (shape) => shape.id !== action.payload
-      );
-    },
-    setSelectedShape(state, action: PayloadAction<IShape | null>) {
-      state.selectedShape = action.payload;
-    },
-    clearSelectedShape(state) {
-      state.selectedShape = null;
+    setZoomScale(state, action: PayloadAction<number>) {
+      state.zoom = action.payload;
     },
   },
 });
 
-// Export the actions
-export const {
-  setShapes,
-  addShape,
-  updateShape,
-  removeShape,
-  setSelectedShape,
-  clearSelectedShape,
-} = shapesSlice.actions;
+export const { setProjectName, setProject, setScale, setZoomScale } =
+  shapesSlice.actions;
 
-// Export the reducer
 export default shapesSlice.reducer;

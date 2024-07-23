@@ -44,13 +44,14 @@ const ShapeEditor: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(false);
 
   const [dragging, setDragging] = useState<IShape | null>(null);
+  const [isMouseDown, setIsMouseDown] = useState(false);
   const [resizing, setResizing] = useState<IShape | null>(null);
   const [offset, setOffset] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
   });
 
-  // => debouncing
+  // => debouncing api
   const debouncedUpdate = useMemo(
     () =>
       debounce((id, shapes) => {
@@ -68,6 +69,7 @@ const ShapeEditor: React.FC = () => {
     };
   }, [shapes, debouncedUpdate, id]);
 
+  // --> initial project setup ⚙️
   useEffect(() => {
     if (data && data.data) {
       dispatch(setShapes(data.data.shapes));
@@ -125,7 +127,7 @@ const ShapeEditor: React.FC = () => {
     resize: boolean = false
   ) => {
     e.stopPropagation();
-
+    setIsMouseDown(true);
     if (resize) {
       setResizing(shape);
     } else {
@@ -148,11 +150,12 @@ const ShapeEditor: React.FC = () => {
     dispatch(setShapes(newShapes));
   };
 
+  // ---> keyboard events ⌨️ ⌨️
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const keycode = e.keyCode;
 
-      console.log(keycode);
+      const keyCodes = [37, 38, 39, 40];
 
       // to delete the element
       if (keycode === 46 && selectedShape) {
@@ -166,17 +169,20 @@ const ShapeEditor: React.FC = () => {
       }
 
       if (selectedShape) {
-        // up arrow key=> 38
-        if (keycode === 38) {
+        // -> prevent default behavbior
+        if (keyCodes.includes(keycode)) {
           e.preventDefault();
+        }
+
+        if (keycode === 38) {
+          // up arrow key=> 38
           const replicashape = { ...selectedShape };
-          replicashape.y -= 5 / zoom;
+          replicashape.y -= 5 / (zoom / 100);
           dispatch(updateShape(replicashape));
           dispatch(setSelectedShape(replicashape));
         }
         // down arrow key=> 40
         if (keycode === 40) {
-          e.preventDefault();
           const replicashape = { ...selectedShape };
           replicashape.y += 5 / (zoom / 100);
           dispatch(updateShape(replicashape));
@@ -184,7 +190,6 @@ const ShapeEditor: React.FC = () => {
         }
         // left arrow key=>37
         if (keycode === 37) {
-          e.preventDefault();
           const replicashape = { ...selectedShape };
           replicashape.x -= 5 / (zoom / 100);
           dispatch(updateShape(replicashape));
@@ -192,7 +197,6 @@ const ShapeEditor: React.FC = () => {
         }
         // left arrow key=>39
         if (keycode === 39) {
-          e.preventDefault();
           const replicashape = { ...selectedShape };
           replicashape.x += 5 / (zoom / 100);
           dispatch(updateShape(replicashape));
@@ -225,16 +229,18 @@ const ShapeEditor: React.FC = () => {
           });
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [selectedShape, shapes, dispatch]);
 
+  // ---> wheel event 🛞
   useEffect(() => {
     const canvasContainer = canvasContainerRef.current;
 
-    const handleScroll = (e: WheelEvent | any) => {
+    const handleMoveMouseWheel = (e: WheelEvent | any) => {
       e.preventDefault();
       const deltaY = e.wheelDelta;
 
@@ -245,14 +251,22 @@ const ShapeEditor: React.FC = () => {
 
     if (!canvasContainer) return;
 
-    canvasContainer.addEventListener("wheel", handleScroll);
+    canvasContainer.addEventListener("wheel", handleMoveMouseWheel);
     return () => {
-      canvasContainer.removeEventListener("wheel", handleScroll);
+      canvasContainer.removeEventListener("wheel", handleMoveMouseWheel);
     };
-  }, [dispatch, canvasContainerRef.current, zoom]);
+  }, [dispatch, canvasContainerRef, zoom]);
 
+  // --> mouse move event 🐭
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (dragging) {
+    if (e.ctrlKey && canvasContainerRef.current && isMouseDown) {
+      const moveX = e.movementX;
+      const moveY = e.movementY;
+      canvasContainerRef.current.scrollLeft -= moveX;
+      canvasContainerRef.current.scrollTop -= moveY;
+      return "";
+    }
+    if (!e.ctrlKey && dragging) {
       const newShapes = shapes.map((shape) => {
         if (shape.id === dragging.id) {
           const newShape = {
@@ -267,7 +281,8 @@ const ShapeEditor: React.FC = () => {
         return shape;
       });
       dispatch(setShapes(newShapes));
-    } else if (resizing) {
+    }
+    if (!e.ctrlKey && resizing) {
       const newShapes = shapes.map((shape) => {
         if (shape.id === resizing.id) {
           if (shape.type === "text" && shape.textStyle?.fontSize) {
@@ -307,6 +322,7 @@ const ShapeEditor: React.FC = () => {
   const handleMouseUp = () => {
     setDragging(null);
     setResizing(null);
+    setIsMouseDown(false);
   };
   if (isFetching) {
     return <Loader />;
@@ -330,6 +346,7 @@ const ShapeEditor: React.FC = () => {
           id="canvas-container"
           ref={canvasContainerRef}
           onMouseUp={handleMouseUp}
+          onMouseDown={() => setIsMouseDown(true)}
           onMouseMove={handleMouseMove}
         >
           <div

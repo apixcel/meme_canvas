@@ -29,14 +29,12 @@ const CanvasHeader = () => {
   );
 
   useEffect(() => {
-    if (project_name === projectName) return;
-
     debouncedUpdate(id as string, projectName);
 
     return () => {
       debouncedUpdate.cancel();
     };
-  }, [debouncedUpdate, projectName, id, project_name]);
+  }, [debouncedUpdate, projectName, id]);
 
   return (
     <div className="h-[70px] w-full canvasHeadGradient shrink-0 px-[20px] flex items-center justify-between border-b-[1px] border-borderDark">

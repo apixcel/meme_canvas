@@ -19,6 +19,7 @@ import {
   removeShape,
   setSelectedShape,
   setShapes,
+  updateShape,
 } from "@/redux/features/project/shapes.slice";
 import { useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
@@ -79,13 +80,13 @@ const ShapeEditor: React.FC = () => {
       const height = data.data.canvas.height;
       const projectName = data.data.projectName || "";
 
-      const canvasConatinerWidth = canvasContainer.offsetWidth;
-      const canvasConatinerHeight = canvasContainer.offsetHeight;
+      const canvasConatinerWidth = canvasContainer.offsetWidth * (zoom / 100);
+      const canvasConatinerHeight = canvasContainer.offsetHeight * (zoom / 100);
 
       const scaleWidth = canvasConatinerWidth / width;
       const scaleHeight = canvasConatinerHeight / height;
 
-      // Choose the minimum scale to fit both dimensions
+      // ---> minimum scale to fit both dimensions
       const scale = Math.min(scaleWidth, scaleHeight) * 100;
 
       if (scale > 0 && scale < 110) {
@@ -150,6 +151,9 @@ const ShapeEditor: React.FC = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const keycode = e.keyCode;
+
+      console.log(keycode);
+
       // to delete the element
       if (keycode === 46 && selectedShape) {
         dispatch(removeShape(selectedShape.id));
@@ -159,6 +163,41 @@ const ShapeEditor: React.FC = () => {
         navigator.clipboard.writeText(selectedShape.id || "").catch((err) => {
           console.error("Could not copy text: ", err);
         });
+      }
+
+      if (selectedShape) {
+        // up arrow key=> 38
+        if (keycode === 38) {
+          e.preventDefault();
+          const replicashape = { ...selectedShape };
+          replicashape.y -= 5 / zoom;
+          dispatch(updateShape(replicashape));
+          dispatch(setSelectedShape(replicashape));
+        }
+        // down arrow key=> 40
+        if (keycode === 40) {
+          e.preventDefault();
+          const replicashape = { ...selectedShape };
+          replicashape.y += 5 / (zoom / 100);
+          dispatch(updateShape(replicashape));
+          dispatch(setSelectedShape(replicashape));
+        }
+        // left arrow key=>37
+        if (keycode === 37) {
+          e.preventDefault();
+          const replicashape = { ...selectedShape };
+          replicashape.x -= 5 / (zoom / 100);
+          dispatch(updateShape(replicashape));
+          dispatch(setSelectedShape(replicashape));
+        }
+        // left arrow key=>39
+        if (keycode === 39) {
+          e.preventDefault();
+          const replicashape = { ...selectedShape };
+          replicashape.x += 5 / (zoom / 100);
+          dispatch(updateShape(replicashape));
+          dispatch(setSelectedShape(replicashape));
+        }
       }
 
       if (e.ctrlKey && e.key === "v") {

@@ -12,6 +12,7 @@ import { useEffect, useMemo } from "react";
 const CanvasHeader = () => {
   const { user } = useAppSelector((state) => state.auth);
   const { projectName, canvas } = useAppSelector((state) => state.project);
+  let project_name = projectName;
 
   const dispatch = useAppDispatch();
 
@@ -20,20 +21,22 @@ const CanvasHeader = () => {
   const [renameProject] = useRenameProjectMutation();
   const debouncedUpdate = useMemo(
     () =>
-      debounce((id: string, projectName: string) => {
+      debounce(async (id: string, projectName: string) => {
         if (!projectName) return;
-        renameProject({ id: id as string, projectName: projectName });
+        await renameProject({ id: id as string, projectName: projectName });
       }, 1000),
     [renameProject]
   );
 
   useEffect(() => {
+    if (project_name === projectName) return;
+
     debouncedUpdate(id as string, projectName);
 
     return () => {
       debouncedUpdate.cancel();
     };
-  }, [debouncedUpdate, projectName, id]);
+  }, [debouncedUpdate, projectName, id, project_name]);
 
   return (
     <div className="h-[70px] w-full canvasHeadGradient shrink-0 px-[20px] flex items-center justify-between border-b-[1px] border-borderDark">

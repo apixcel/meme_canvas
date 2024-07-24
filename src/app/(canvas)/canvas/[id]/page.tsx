@@ -259,11 +259,17 @@ const ShapeEditor: React.FC = () => {
 
   // --> mouse move event 🐭
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    const canvas = document.getElementById("canvas") as HTMLElement;
+    if (e.ctrlKey && isMouseDown && canvas) {
+      canvas.style.cursor = "grab";
+    }
+
     if (e.ctrlKey && canvasContainerRef.current && isMouseDown) {
       const moveX = e.movementX;
       const moveY = e.movementY;
       canvasContainerRef.current.scrollLeft -= moveX;
       canvasContainerRef.current.scrollTop -= moveY;
+      canvas.style.cursor = "grabbing";
       return "";
     }
     if (!e.ctrlKey && dragging) {
@@ -323,6 +329,8 @@ const ShapeEditor: React.FC = () => {
     setDragging(null);
     setResizing(null);
     setIsMouseDown(false);
+    const canvas = document.getElementById("canvas") as HTMLElement;
+    canvas.style.cursor = "auto";
   };
   if (isFetching) {
     return <Loader />;

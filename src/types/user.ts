@@ -5,5 +5,5 @@ export type TUser = {
   lastName: string;
   role: "user" | "admin";
   createdAt: string;
-  image: string;
+  image?: string;
 };

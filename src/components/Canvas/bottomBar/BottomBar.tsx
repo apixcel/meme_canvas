@@ -1,3 +1,4 @@
+import { Input } from "@/components/ui/input";
 import { setZoomScale, zoovVal } from "@/redux/features/project/project.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 
@@ -9,7 +10,7 @@ const BottomBar = () => {
     <div className="h-[50px] w-full py-[5px] px-[10px] flex items-center justify-between bg-white border-t-[1px] border-borderColor">
       <div className="center gap-[10px]">
         <p className="text-primaryTxt text-[16px]">Zoom Scale</p>
-        <input
+        <Input
           type="range"
           id="zoom"
           className="bg-primaryMat w-[350px]"
@@ -20,7 +21,7 @@ const BottomBar = () => {
             dispatch(setZoomScale(Number(target.value)))
           }
         />
-        <span className="text-primaryTxt text-[16px]">{zoom}%</span>
+        <span className="text-primaryTxt text-[16px]">{zoom.toFixed(2)}%</span>
       </div>
       <div className="center gap-[16px] text-[13px]">
         <div className="center gap-[5px] text-primaryTxt">

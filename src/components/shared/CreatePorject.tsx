@@ -7,6 +7,7 @@ import * as Yup from "yup";
 import { Button } from "../ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -117,14 +118,16 @@ const CreateProject: React.FC<IPorps> = ({ children }) => {
               />
             </div>
             <DialogFooter>
-              <Button
-                variant="destructive"
-                className="mr-auto text-white"
-                type="button"
-                id="cancel"
-              >
-                Cancel
-              </Button>
+              <DialogClose asChild>
+                <Button
+                  variant="destructive"
+                  className="mr-auto text-white"
+                  type="button"
+                  id="cancel"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
               <Button type="submit" className="bg-primaryMat">
                 Create Project
               </Button>

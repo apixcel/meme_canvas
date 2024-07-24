@@ -19,7 +19,7 @@ const RecentProject = () => {
       <h2 className="text-primaryTxt font-[700] text-[35px]">
         Recent Projects
       </h2>
-      <div className="gridResponsive gap-[20px] flex-wrap w-full">
+      <div className="gridResponsive gap-[20px] justify-center w-full">
         {data?.data.map((project) => (
           <ProjectCard data={project} key={project._id} />
         ))}

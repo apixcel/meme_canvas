@@ -2,6 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  useUpdateUserImageMutation,
+  useUpdateUserInfoMutation,
+} from "@/redux/features/auth/user.api";
 import { useAppSelector } from "@/redux/hook";
 import { TUser } from "@/types/user";
 import { local_img_url } from "@/utils/localImageURL";
@@ -11,13 +15,12 @@ import Image from "next/image";
 import { useState } from "react";
 import { FaPen } from "react-icons/fa";
 import "react-phone-number-input/style.css";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().optional(),
-  address: Yup.string().optional(),
+  firstName: Yup.string().required("* First Name is required"),
+  lastName: Yup.string().required("* Last Name is required"),
   image: Yup.mixed().optional(),
 });
 type Image = { image: string | File | null | undefined };
@@ -28,18 +31,15 @@ const ProfileUpdate = () => {
   const initialValues = {
     firstName,
     lastName,
-    image,
+    image: "",
   };
   type FormValues = typeof initialValues & Image;
   type key = keyof Pick<FormValues, "firstName" | "lastName">;
-  const [profileUrl, setProfileUrl] = useState(
-    user?.image || "/images/avatar.jpg"
-  );
-
-  const dispatch = useDispatch();
+  const [profileUrl, setProfileUrl] = useState(image || "/images/avatar.jpg");
 
   // mutation
-  const [updateDetails] = [0];
+  const [updateDetails] = useUpdateUserInfoMutation();
+  const [updateProfileImage] = useUpdateUserImageMutation();
 
   const onSubmit = async (values: FormValues) => {
     const toastId = toast.loading("Please wait");
@@ -55,16 +55,22 @@ const ProfileUpdate = () => {
         payload[key] = value;
       }
     });
-
-    if (image) {
-      payload.image = image as File;
-    }
-    console.log(payload);
-
     try {
+      if (image) {
+        const formData = new FormData();
+        formData.append("file", image);
+        await updateProfileImage(formData);
+      }
+
+      if (!Object.keys(payload).length) {
+        toast.success("nothing");
+        toast.dismiss(toastId);
+        return;
+      }
+      toast.success("Profile updated");
+      await updateDetails(payload);
     } catch (error) {
       console.log(error);
-
       toast.error("Something went wrong while updating your details");
     } finally {
       toast.dismiss(toastId);
@@ -121,7 +127,7 @@ const ProfileUpdate = () => {
                 <ErrorMessage
                   name="image"
                   component="div"
-                  className="text-red-500 text-sm"
+                  className="text-red-500 text-sm mt-[5px]"
                 />
                 <label
                   htmlFor="image"
@@ -143,7 +149,7 @@ const ProfileUpdate = () => {
               <ErrorMessage
                 name="firstName"
                 component="div"
-                className="text-red-500 text-sm"
+                className="text-red-500 text-sm mt-[5px]"
               />
             </div>
 
@@ -158,7 +164,7 @@ const ProfileUpdate = () => {
               <ErrorMessage
                 name="lastName"
                 component="div"
-                className="text-red-500 text-sm"
+                className="text-red-500 text-sm mt-[5px]"
               />
             </div>
             <div className="mb-4">

@@ -46,7 +46,7 @@ const Login = () => {
         user: data.data,
       };
       dispatch(setUser(authData));
-      Cookies.set("refreshToken", data.refreshToken);
+      Cookies.set("refreshToken", data.refreshToken, { expires: 30 });
       dispatch(setToken(data.accessToken || ""));
 
       toast.success("Successfully logged in", {

@@ -11,7 +11,7 @@ const ProjectCard = ({ data }: { data: IProjects }) => {
   const updatedAt = new Date(data.updatedAt || "22-12-2024");
 
   return (
-    <Card className="relative">
+    <Card className="relative w-full">
       <ProjectCardAction projectId={data._id} projectName={data.projectName} />
       <Link href={`/canvas/${data._id}`} className="w-full">
         <CardContent className="px-[10px] pt-[10px]">

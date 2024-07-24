@@ -22,8 +22,6 @@ const userApi = api.injectEndpoints({
     }),
     getAuthor: builder.query<{ data: TUser }, string>({
       query: (token) => {
-   
-
         return {
           url: `/auth/auth-state`,
           method: "GET",

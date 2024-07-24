@@ -1,7 +1,8 @@
-import { Input } from "@/components/ui/input";
 import { setZoomScale, zoovVal } from "@/redux/features/project/project.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
-
+import "react-range-slider-input/dist/style.css";
+import Slider from "react-rangeslider";
+import "react-rangeslider/lib/index.css";
 const BottomBar = () => {
   const { zoom, canvas } = useAppSelector((state) => state.project);
   const { selectedShape } = useAppSelector((state) => state.shapes);
@@ -10,17 +11,15 @@ const BottomBar = () => {
     <div className="h-[50px] w-full py-[5px] px-[10px] flex items-center justify-between bg-white border-t-[1px] border-borderColor">
       <div className="center gap-[10px]">
         <p className="text-primaryTxt text-[16px]">Zoom Scale</p>
-        <Input
-          type="range"
-          id="zoom"
-          className="bg-primaryMat w-[350px]"
+        <Slider
+          className="bg-red-300 w-[350px]"
           value={zoom}
           max={zoovVal.maxZoomVal}
           min={zoovVal.minZoomVal}
-          onChange={({ target }) =>
-            dispatch(setZoomScale(Number(target.value)))
-          }
+          step={10}
+          onChange={(e) => dispatch(setZoomScale(Number(e)))}
         />
+
         <span className="text-primaryTxt text-[16px]">{zoom.toFixed(2)}%</span>
       </div>
       <div className="center gap-[16px] text-[13px]">

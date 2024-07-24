@@ -13,7 +13,6 @@ interface ProjectState {
     width: number;
     height: number;
   };
-  isExtended: boolean; // is the canvas in larger than the screen
   zoom: number; // zoom ammount maxvalue 100%
 }
 
@@ -23,7 +22,6 @@ const initialState: ProjectState = {
     width: 0,
     height: 0,
   },
-  isExtended: false,
   zoom: 100,
 };
 

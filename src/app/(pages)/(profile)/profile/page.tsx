@@ -18,7 +18,7 @@ const Profile = () => {
   }
   if (!user) {
     Cookies.set("redirect", "/profile");
-    router.push("/login");
+    router.push("/");
   }
 
   return (

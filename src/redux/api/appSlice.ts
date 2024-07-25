@@ -9,10 +9,10 @@ import Cookies from "js-cookie";
 import { setState, setToken, setUser } from "../features/auth/auth.slice";
 import { RootState } from "../store/store";
 
-const url = process.env.NEXT_PUBLIC_API_URL;
+export const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: url,
+  baseUrl: baseUrl,
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {
@@ -34,7 +34,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     try {
       const refreshToken = Cookies.get("refreshToken") || "";
 
-      const res = await fetch(`${url}/auth/refreshToken`, {
+      const res = await fetch(`${baseUrl}/auth/refreshToken`, {
         method: "POST",
 
         headers: {

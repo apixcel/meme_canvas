@@ -34,7 +34,23 @@ const Login = () => {
   const handleLogin = async (values: TFormValues) => {
     const toastId = toast.loading("Please wait...");
     try {
-      const { data } = await login(values);
+      const { data, error: err } = await login(values);
+      const error: any = err;
+      if (error) {
+        if (error.status === 401) {
+          return toast.error("password didn;t matched", {
+            description: "try to remember your password and try again",
+          });
+        }
+        if (error.status === 404) {
+          return toast.error("Invalid email address", {
+            description: "Enter a valid email adress.",
+          });
+        }
+
+        return toast.error(error.data?.message || "Unknown error occureds");
+      }
+
       if (!data) {
         return toast.error("Something went wrong");
       }

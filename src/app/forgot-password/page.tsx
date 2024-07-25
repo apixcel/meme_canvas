@@ -7,6 +7,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import * as Yup from "yup";
 import CheckEmail from "./CheckEmail";
+import { baseUrl } from "@/redux/api/appSlice";
 
 const initialValues = {
   email: "",
@@ -24,10 +25,10 @@ const ForgotPassword = () => {
   const handleForgotPassword = async (values: TFormValues) => {
     console.log(values);
 
-    const url = process.env.NEXT_PUBLIC_API_URL as string;
+ 
 
     try {
-      const res = await fetch(`${url}/auth/forgot-password`, {
+      const res = await fetch(`${baseUrl}/auth/forgot-password`, {
         body: JSON.stringify(values),
         method: "POST",
         headers: {
@@ -54,7 +55,7 @@ const ForgotPassword = () => {
       {isSent ? (
         <CheckEmail setIsSent={setIsSent} />
       ) : (
-        <div className="w-[750px] shadow-md flex flex-col gap-[10px] p-[20px] rounded-[15px]">
+        <div className="w-[90%] md:w-[750px] shadow-md flex flex-col gap-[10px] p-[20px] rounded-[15px]">
           <Link
             href={"/login"}
             className="flex items-center justify-start gap-[5px]"

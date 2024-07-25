@@ -12,7 +12,7 @@ const BottomBar = () => {
       <div className="center gap-[10px]">
         <p className="text-primaryTxt text-[16px]">Zoom Scale</p>
         <Slider
-          className="bg-red-300 w-[350px]"
+          className="w-[350px]"
           value={zoom}
           max={zoovVal.maxZoomVal}
           min={zoovVal.minZoomVal}

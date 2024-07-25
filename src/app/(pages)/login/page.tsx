@@ -128,8 +128,20 @@ const Login = () => {
           <div className="mt-6 text-start">
             <p className="text-gray-700">
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-primaryMat">
+              <Link
+                href="/register"
+                className="text-primaryMat hover:underline"
+              >
                 Create Account
+              </Link>
+            </p>
+            <p className="text-gray-700">
+              Dont remeber our password?{" "}
+              <Link
+                href="/forgot-password"
+                className="text-primaryMat hover:underline"
+              >
+                forgot password
               </Link>
             </p>
           </div>

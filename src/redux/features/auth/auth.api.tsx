@@ -20,6 +20,14 @@ const userApi = api.injectEndpoints({
       }),
       invalidatesTags: ["user"],
     }),
+    resetPassword: builder.mutation({
+      query: (payload: { oldPassword: string; password: string }) => ({
+        url: "/auth/reset-password",
+        method: "PUT",
+        body: payload,
+      }),
+      invalidatesTags: ["user"],
+    }),
     getAuthor: builder.query<{ data: TUser }, string>({
       query: (token) => {
         return {
@@ -38,4 +46,5 @@ export const {
   useRegisterCustomerMutation,
   useLoginUserMutation,
   useGetAuthorQuery,
+  useResetPasswordMutation,
 } = userApi;

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,6 +5,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import TransparencyICon from "@/icons/TransparencyICon";
 import {
   setSelectedShape,
   updateShape,
@@ -30,7 +30,9 @@ const ChangeOpacity: React.FC<IProps> = ({ handleChangeOpacity }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Opacity</Button>
+        <button>
+          <TransparencyICon />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Change Opacity</DropdownMenuLabel>
@@ -38,6 +40,7 @@ const ChangeOpacity: React.FC<IProps> = ({ handleChangeOpacity }) => {
           <input
             type="range"
             className="w-full"
+            value={(selectedShape ? selectedShape.opacity : 1) * 100}
             onChange={changeOpacity}
             max={100}
             min={0}

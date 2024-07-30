@@ -1,5 +1,8 @@
 import { Input } from "@/components/ui/input";
-import { updateShape } from "@/redux/features/project/shapes.slice";
+import {
+  setSelectedShape,
+  updateShape,
+} from "@/redux/features/project/shapes.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { IShape } from "@/types/shape";
 import React from "react";
@@ -14,6 +17,7 @@ const ChangeColor: React.FC<IProps> = ({ handleChangeColor }) => {
     const shape = handleChangeColor(e);
     if (!shape) return;
     dispatch(updateShape(shape));
+    dispatch(setSelectedShape(shape));
   };
 
   return (

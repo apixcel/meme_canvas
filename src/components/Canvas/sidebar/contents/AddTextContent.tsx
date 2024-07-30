@@ -13,6 +13,7 @@ const AddTextContent: React.FC = () => {
       x: 250,
       y: 250,
       radius: 0,
+      opacity: 1,
       width: 0,
       height: 0,
       color: "#000000",

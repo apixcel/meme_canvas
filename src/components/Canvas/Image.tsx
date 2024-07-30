@@ -12,7 +12,8 @@ const ImageCanvas = ({ shape }: { shape: IShape }) => {
       src={shape.imageUrl as string}
       alt="shape"
       className="no-drag"
-      style={{ width: `${shape.width}px`, height: "auto" }}
+       
+        style={{ width: `${shape.width}px`, height: "auto", opacity:shape.opacity }}
       id={shape.id}
     />
   );

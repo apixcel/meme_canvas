@@ -14,6 +14,7 @@ export interface IShape {
   y: number;
   width: number;
   height: number;
+  opacity: number;
   id: string;
   color: string;
   rotation: number;
@@ -24,5 +25,3 @@ export interface IShape {
   zIndex: number;
   textStyle?: ITextStyle;
 }
-
-

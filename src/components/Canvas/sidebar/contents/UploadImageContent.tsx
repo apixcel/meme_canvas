@@ -29,6 +29,7 @@ const UploadImageContent = () => {
   ) => {
     if (url) {
       const newShape: IShape = {
+        opacity: 1,
         x: 200,
         y: 200,
         width: 100,
@@ -66,6 +67,7 @@ const UploadImageContent = () => {
         color: "",
         radius: 0,
         zIndex: shapes.length,
+        opacity: 1,
         id: uuidv4(),
         type: "image",
         rotation: 0,

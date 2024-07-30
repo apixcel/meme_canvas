@@ -14,6 +14,14 @@ export const shapeStyleFunction = (args: IShapeStyleProps) => {
 
     return { ...selectedShape, color };
   };
+  const handleChangeOpacity = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const opacityValue = Number(e.target.value); //0 - 100
+    const opacity = opacityValue / 100;
+
+    if (!selectedShape) return null;
+
+    return { ...selectedShape, opacity };
+  };
 
   const handleChangeRotation = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedShape) return null;
@@ -51,5 +59,6 @@ export const shapeStyleFunction = (args: IShapeStyleProps) => {
     handleChangeRotation,
     updateFontSize,
     updateFontWeight,
+    handleChangeOpacity,
   };
 };

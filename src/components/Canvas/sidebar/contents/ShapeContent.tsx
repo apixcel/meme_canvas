@@ -12,6 +12,7 @@ const ShapeContent: React.FC = () => {
       x: 150,
       y: 150,
       radius: 100,
+      opacity: 1,
       width: 200,
       height: 200,
       color: "#4a4a4a",
@@ -26,6 +27,7 @@ const ShapeContent: React.FC = () => {
   const addRectangle = () => {
     const newShape: IShape = {
       x: 50,
+      opacity: 1,
       radius: 0,
       y: 50,
       width: 300,

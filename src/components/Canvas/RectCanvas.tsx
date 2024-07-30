@@ -9,6 +9,8 @@ const RectCanvas = ({ shape }: { shape: IShape }) => {
         height: `${shape.height}px`,
         backgroundColor: shape.color,
         borderRadius: `${shape.radius}%`,
+        opacity:shape.opacity
+
       }}
     ></div>
   );

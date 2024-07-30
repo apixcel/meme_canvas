@@ -8,6 +8,7 @@ const TextCanvas = ({ shape }: { shape: IShape }) => {
         fontSize: `${shape.textStyle?.fontSize || 20}px`,
         textAlign: `${shape.textStyle?.textAlign || "start"}`,
         fontWeight: `${shape.textStyle?.fontWeight || "400"}`,
+        opacity:shape.opacity
       }}
       id={shape.id}
     >

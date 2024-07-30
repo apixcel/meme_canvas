@@ -10,7 +10,7 @@ import { MdDownload } from "react-icons/md";
 const DownloadButton: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const { canvas, isExtended, projectName, zoom } = useAppSelector(
+  const { canvas,  projectName, zoom } = useAppSelector(
     (state) => state.project
   );
   const { shapes } = useAppSelector((state) => state.shapes);
